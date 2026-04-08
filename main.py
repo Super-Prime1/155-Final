@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 app = Flask(__name__)
 app.secret_key = "123"
 
-conn_str = "mysql+pymysql://root:cset155@localhost/online_store"
+conn_str = "mysql+pymysql://root:cset155@localhost/"
 engine = create_engine(conn_str, echo=True)
 conn = engine.connect()
 
