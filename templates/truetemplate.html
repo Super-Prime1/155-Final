@@ -1,27 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Online Store</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/style.css') }}">
-</head>
+<header class="header">
+    <div class="logo-area">
+        <h1 class="logo"> <img src="/static/socktopus_logo.png" alt="Socktopus Logo"></h1>
+        <p class="tagline">Eight arms. Endless socks.</p>
+    </div>
 
-<body>
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Shop</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Signup</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <header>
-        <h1>Welcome to the Online Store</h1>
-        <nav>
 
-        </nav>
-    </header>
+<footer class="footer">
+    <div class="footer-left">
+        <h3>Socktopus</h3>
+        <p>Where every toe gets a hug.</p>
+    </div>
 
-    <main>
-        <h2>Welcome to Online Store</h2>
-    </main>
+    <div class="footer-links">
+        <ul>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/returns">Returns</a></li>
+            <li><a href="/support">Customer Support</a></li>
+        </ul>
+    </div>
 
-    <footer>
-        <p>© 2026 Online Store</p>
-    </footer>
-
-</body>
-</html>
+    <div class="footer-copy">
+        <p>© 2026 Socktopus — All Rights Reserved</p>
+    </div>
+</footer>

@@ -9,11 +9,29 @@ engine = create_engine(conn_str, echo=True)
 conn = engine.connect()
 
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():    
+    render_template('login.html')
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    render_template('signup.html')
+
+
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    render_template('account.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('/')
 
 
 if __name__ == '__main__':
