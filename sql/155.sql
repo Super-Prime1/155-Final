@@ -98,3 +98,37 @@ quantity int not null
  quantity int not null,
  price decimal(10,2) not null
  )
+
+
+--admin
+insert into users (name, email, username,password, userid, role)
+values ('jackson', 'jackson12@gmail.com', 'bigjack', 'jackjack', 1, 'admin');
+
+insert into users (name, email, username,password, userid, role)
+values ('joshua', 'joshua12@gmail.com', 'littlejoshua', 'joshua', 2, 'admin');
+
+--customers
+insert into users (name, email, username,password, userid, role)
+values ('manuel', 'manuel12@gmail.com', 'bigmanuel', 'manuel1', 3, 'customer');
+
+insert into users (name, email, username,password, userid, role)
+values ('collin', 'collin12@gmail.com', 'littlecollin', 'collin1', 4, 'customer');
+
+insert into users (name, email, username,password, userid, role)
+values ('steve', 'steve12@gmail.com', 'bigsteve', 'steve1', 5, 'customer');
+
+insert into users (name, email, username,password, userid, role)
+values ('mike', 'mike12@gmail.com', 'bigmike', 'mike1', 6, 'customer');
+
+insert into users (name, email, username,password, userid, role)
+values ('caleb', 'caleb12@gmail.com', 'bigcaleb', 'caleb1', 7, 'customer');
+
+--vendors
+insert into users (name, email, username,password, userid, role)
+values ('owen', 'owen12@gmail.com', 'bigowen', 'owen1', 8, 'vendor');
+
+insert into users (name, email, username,password, userid, role)
+values ('jim', 'jim12@gmail.com', 'bigjim', 'jim1', 9, 'vendor');
+
+insert into users (name, email, username,password, userid, role)
+values ('clairel', 'claire12@gmail.com', 'bigclaire', 'claire1', 10, 'vendor');
