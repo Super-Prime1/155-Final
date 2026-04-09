@@ -195,3 +195,4 @@ INSERT INTO discount (length, discountprice, price, productid) VALUES
 ('2026-12-31', 25.00, 30.00, 3),
 
 
+
