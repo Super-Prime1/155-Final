@@ -1,8 +1,15 @@
 create database online_store;
 use online_store;
-select * from warranty;
-show tables;
 SET FOREIGN_KEY_CHECKS = 0;
+
+create table pendingusers(
+name varchar(255)not null,
+email varchar(255) not null,
+username varchar(255) not null,
+password varchar(255) not null,
+userid int primary key auto_increment,
+role enum ("admin","vendor","customer")
+);
 
 create table users(
 name varchar(255)not null,
@@ -40,7 +47,6 @@ FOREIGN KEY (cartid) REFERENCES cart(cartid),
 orderid int primary key auto_increment 
 );
 
-
 create table products(
 title varchar(255) not null,
 description varchar(255) not null,
@@ -49,8 +55,11 @@ price decimal(10,2) not null,
 instock int not null,
 image varchar(500),
 warrantyid int,
-FOREIGN KEY (warrantyid) REFERENCES warranty(warrantyid)
+FOREIGN KEY (warrantyid) REFERENCES warranty(warrantyid),
+vendorid INT NOT NULL,
+FOREIGN KEY (vendorid) REFERENCES users(userid)
 );
+
 
 create table returns(
 complaint varchar(255) not null,
@@ -98,3 +107,56 @@ quantity int not null
  quantity int not null,
  price decimal(10,2) not null
  )
+
+SHOW TABLES;
+SELECT * FROM cart;
+SELECT * FROM cartitem;
+SELECT * FROM chat;
+SELECT * FROM cartitem;
+SELECT * FROM color;
+SELECT * FROM discount;
+SELECT * FROM orderitems;
+SELECT * FROM orders;
+SELECT * FROM products;
+SELECT * FROM returns;
+SELECT * FROM users;
+SELECT * FROM warranty;
+
+
+-- untimed discount on 2
+-- products and timed discount on 2 more, some items added
+-- to cart in 3 customer accounts, at least 7 orders (with
+-- different order status) and 3 shipped orders from at least 3
+-- customers some orders must have multiple products from multiple
+-- vendors
+
+INSERT INTO warranty (expire_date) VALUES
+('2027-01-01'),
+('2027-06-01'),
+('2028-01-01'),
+('2028-06-01');
+
+
+INSERT INTO products (title, description, price, instock, warrantyid) VALUES
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1),
+("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2),
+("No‑Show Socks", "A pair of no-show socks", 30.00, 25, 3),
+("Knee‑High Socks", "A pair of knee-high socks", 15.00, 75, 4),
+("Over‑the‑Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4),
+("Compression Socks", "A pair of compression socks", 12.00, 80, 1),
+("Dress Socks", "A pair of dress socks", 18.00, 60, 2),
+("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3),
+("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4),
+("Wool Socks", "A pair of wool socks", 25.00, 30, 1);
+
+
+
+INSERT INTO discount (length, discountprice, price, productid) VALUES
+('NULL', 8.00, 10.00, 1),
+('NULL', 15.00, 18.00, 7),
+('2026-12-31', 16.00, 20.00, 2),
+('2026-12-31', 25.00, 30.00, 3),
+
+
+
+
