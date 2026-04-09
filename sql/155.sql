@@ -121,6 +121,13 @@ create table review (
     FOREIGN KEY (productid) REFERENCES products(productid)
 );
 
+create table wishlist (
+    PRIMARY KEY (userid, productid),
+    userid int not null,
+    productid int not null,
+    FOREIGN KEY (userid) REFERENCES users(userid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
+);
 
 --admin
 insert into users (name, email, username,password, role)
@@ -341,3 +348,39 @@ INSERT INTO chat (reason, userid) VALUES
 ('Response: Compression Socks flight suitability', 8),
 ('Admin support: general assistance offered', 1),
 ('Admin support: return request acknowledged', 2);
+
+
+
+
+-- chat crud
+
+SELECT * FROM chat;
+
+UPDATE chat
+SET reason = 'Updated message text'
+WHERE chatid = 5;
+
+DELETE FROM chat
+WHERE chatid = 5;
+
+
+-- return crud
+
+SELECT * FROM returns;
+SELECT r.*
+FROM returns r
+JOIN orders o ON r.orderid = o.orderid
+JOIN cart c ON o.cartid = c.cartid
+WHERE c.userid = 5;   -- customer ID
+
+UPDATE returns
+SET complaint = 'New complaint text here'
+WHERE returnid = 1;
+
+DELETE FROM returns
+WHERE returnid = 2;
+
+
+
+
+
