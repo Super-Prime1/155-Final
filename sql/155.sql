@@ -124,6 +124,13 @@ create table review (
     FOREIGN KEY (productid) REFERENCES products(productid)
 );
 
+create table wishlist (
+    PRIMARY KEY (userid, productid),
+    userid int not null,
+    productid int not null,
+    FOREIGN KEY (userid) REFERENCES users(userid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
+);
 
 --admin
 insert into users (name, email, username,password, role)
@@ -305,9 +312,11 @@ VALUES
 --question 5
 
 --log in question
-insert into users (name, email, username,password, userid, role)
-values ('mae', 'mae12@gmail.com', 'bigmae', 'mae1', 11, 'customer') 
-where not excist( select one from user where userid != userid  )
+INSERT INTO users (name, email, username, password, role)
+SELECT 'mae', 'mae12@gmail.com', 'bigmae', 'mae1', 'customer'
+WHERE NOT EXISTS (
+    SELECT 1 FROM users WHERE username = 'bigmae'
+);
 
 
 select * from users;
@@ -328,48 +337,50 @@ delete from warranty where warrantyid = 4;
 
 --products
 INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
-("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8)
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8);
 
 select * from products;
 
 update products set title = "crews socks" where title = "crew socks";
 
-delete from products where title = " crews socks";
+delete from products where title = "crews socks";
 
 --search 
 select * from products where title = "crew socks";
 select * from products where vendorid = 1;
-select * from products where title = "%crew sock%"
+select * from products where title LIKE "%crew sock%";
 
 --filter
 select * from color where colorid =1;
-select * from products where quanity !=0;
-select * from products where size = "small"
-
+select * from products where instock !=0;
+select * from products where size = "small";
+    
 --cart
-insert into cart(items, total, userid)
+insert into cart(total, userid)
 values ('crew socks', 100.00, 4);
 
 select * from cart;
 
-update total set total = 200 where total = 100;
+update cart set total = 200 where total = 100;
 
-delete from cart where user id = 4;
+delete from cart where userid = 4;
 
 --wish list 
-insert into wishlist(itemid,userid)
+insert into wishlist(productid, userid)
 values(1,3);
 
 select * from wishlist;
 
-update wishlist set itemid=4 where itemid=1;
+update wishlist set productid =4 where productid =1;
+
+delete from wishlist where productid = 4;
 
 delete from wishlist where itemid = 4;
 
 --orders
-update set orderstatus = 'confirmed' where orderid = 1
+update orders set orderstatus = 'confirmed' where orderid = 1;
 
-update set orderstatus = 'shipped' where orderid = 1
+update orders set orderstatus = 'shipped' where orderid = 1;
 
 SELECT SUM(products.price * cartitem.quantity) AS cart_total
 FROM cartitem
@@ -468,4 +479,38 @@ select * from orderitems;
 update orderitems set quanity=4 where orderitemsid=1;
 
 delete from orderitems where orderid = 4;
+
+
+
+-- chat crud
+
+SELECT * FROM chat;
+
+UPDATE chat
+SET reason = 'Updated message text'
+WHERE chatid = 5;
+
+DELETE FROM chat
+WHERE chatid = 5;
+
+
+-- return crud
+
+SELECT * FROM returns;
+SELECT r.*
+FROM returns r
+JOIN orders o ON r.orderid = o.orderid
+JOIN cart c ON o.cartid = c.cartid
+WHERE c.userid = 5;   -- customer ID
+
+UPDATE returns
+SET complaint = 'New complaint text here'
+WHERE returnid = 1;
+
+DELETE FROM returns
+WHERE returnid = 2;
+
+
+
+
 
