@@ -49,6 +49,8 @@ FOREIGN KEY (cartid) REFERENCES cart(cartid),
 orderid int primary key auto_increment 
 );
 
+
+
 create table products(
 title varchar(255) not null,
 description varchar(255) not null,
@@ -110,6 +112,7 @@ quantity int not null
  price decimal(10,2) not null
  );
 
+alter table products add column size enum('extra small','small', 'medium','large','extra large');
 
 create table review (
     reviewid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -304,6 +307,75 @@ VALUES
 
 
 
+
+
+--question 5
+
+--log in question
+INSERT INTO users (name, email, username, password, role)
+SELECT 'mae', 'mae12@gmail.com', 'bigmae', 'mae1', 'customer'
+WHERE NOT EXISTS (
+    SELECT 1 FROM users WHERE username = 'bigmae'
+);
+
+--products
+INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8);
+
+select * from products;
+
+update products set title = "crews socks" where title = "crew socks";
+
+delete from products where title = "crews socks";
+
+--search 
+select * from products where title = "crew socks";
+select * from products where vendorid = 1;
+select * from products where title LIKE "%crew sock%";
+
+--filter
+select * from color where colorid =1;
+select * from products where instock !=0;
+select * from products where size = "small";
+    
+--cart
+insert into cart(total, userid)
+values ('crew socks', 100.00, 4);
+
+select * from cart;
+
+update cart set total = 200 where total = 100;
+
+delete from cart where userid = 4;
+
+--wish list 
+insert into wishlist(productid, userid)
+values(1,3);
+
+select * from wishlist;
+
+update wishlist set productid =4 where productid =1;
+
+delete from wishlist where productid = 4;
+
+
+--orders
+update orders set orderstatus = 'confirmed' where orderid = 1;
+
+update orders set orderstatus = 'shipped' where orderid = 1;
+
+SELECT SUM(products.price * cartitem.quantity) AS cart_total
+FROM cartitem
+JOIN products ON cartitem.productid = products.productid
+WHERE cartitem.cartid = 1;
+
+
+
+
+
+
+
+--review
 INSERT INTO review (userid, productid, rating, reviewtext) VALUES
 (3, 1, '5', 'Great quality and very comfortable.'),
 (4, 5, '4', 'Good socks, fit well.'),
@@ -321,7 +393,7 @@ insert into returns (complaint, date, title, orderid, description, image, type) 
 2, 'The crew socks I received have holes in them.', 'defective-sock.png', 'warranty');
 
 
-
+--chat
 INSERT INTO chat (reason, userid) VALUES
 ('Question about Crew Socks thickness', 3),
 ('Shipping inquiry for Over-the-Calf Socks', 4),
