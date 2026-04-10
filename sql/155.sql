@@ -4,8 +4,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 create table pendingusers(
 name varchar(255)not null,
-email varchar(255) not null,
-username varchar(255) not null,
+email varchar(255) not null unique,
+username varchar(255) not null unique,
 password varchar(255) not null,
 userid int primary key auto_increment,
 role enum ("admin","vendor","customer")
@@ -13,8 +13,8 @@ role enum ("admin","vendor","customer")
 
 create table users(
 name varchar(255)not null,
-email varchar(255) not null,
-username varchar(255) not null,
+email varchar(255) not null unique,
+username varchar(255) not null unique,
 password varchar(255) not null,
 userid int primary key auto_increment,
 role enum ("admin","vendor","customer")
@@ -79,7 +79,7 @@ type enum("refund","return","warranty")
 
 create table discount(
 discountid int not null primary key auto_increment,
-length date not null,
+length date null,
 discountprice decimal(10,2) not null,
 price decimal(10,2) not null,
 productid int not null,
@@ -110,43 +110,53 @@ quantity int not null
  FOREIGN KEY (productid) REFERENCES products(productid),
  quantity int not null,
  price decimal(10,2) not null
- )
+ );
 
 alter table products add column size enum('extra small','small', 'medium','large','extra large');
 
+create table review (
+    reviewid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userid INT NOT NULL,
+    productid INT NOT NULL,
+    rating ENUM('1','2','3','4','5') NOT NULL,
+    reviewtext VARCHAR(255) NOT NULL,
+    FOREIGN KEY (userid) REFERENCES users(userid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
+);
+
 
 --admin
-insert into users (name, email, username,password, userid, role)
-values ('jackson', 'jackson12@gmail.com', 'bigjack', 'jackjack', 1, 'admin');
+insert into users (name, email, username,password, role)
+values ('jackson', 'jackson12@gmail.com', 'bigjack', 'jackjack', 'admin');
 
-insert into users (name, email, username,password, userid, role)
-values ('joshua', 'joshua12@gmail.com', 'littlejoshua', 'joshua', 2, 'admin');
+insert into users (name, email, username,password, role)
+values ('joshua', 'joshua12@gmail.com', 'littlejoshua', 'joshua', 'admin');
 
 --customers
-insert into users (name, email, username,password, userid, role)
-values ('manuel', 'manuel12@gmail.com', 'bigmanuel', 'manuel1', 3, 'customer');
+insert into users (name, email, username,password, role)
+values ('manuel', 'manuel12@gmail.com', 'bigmanuel', 'manuel1', 'customer');
 
-insert into users (name, email, username,password, userid, role)
-values ('collin', 'collin12@gmail.com', 'littlecollin', 'collin1', 4, 'customer');
+insert into users (name, email, username,password, role)
+values ('collin', 'collin12@gmail.com', 'littlecollin', 'collin1', 'customer');
 
-insert into users (name, email, username,password, userid, role)
-values ('steve', 'steve12@gmail.com', 'bigsteve', 'steve1', 5, 'customer');
+insert into users (name, email, username,password, role)
+values ('steve', 'steve12@gmail.com', 'bigsteve', 'steve1', 'customer');
 
-insert into users (name, email, username,password, userid, role)
-values ('mike', 'mike12@gmail.com', 'bigmike', 'mike1', 6, 'customer');
+insert into users (name, email, username,password, role)
+values ('mike', 'mike12@gmail.com', 'bigmike', 'mike1', 'customer');
 
-insert into users (name, email, username,password, userid, role)
-values ('caleb', 'caleb12@gmail.com', 'bigcaleb', 'caleb1', 7, 'customer');
+insert into users (name, email, username,password, role)
+values ('caleb', 'caleb12@gmail.com', 'bigcaleb', 'caleb1', 'customer');
 
 --vendors
-insert into users (name, email, username,password, userid, role)
-values ('owen', 'owen12@gmail.com', 'bigowen', 'owen1', 8, 'vendor');
+insert into users (name, email, username,password, role)
+values ('owen', 'owen12@gmail.com', 'bigowen', 'owen1', 'vendor');
 
-insert into users (name, email, username,password, userid, role)
-values ('jim', 'jim12@gmail.com', 'bigjim', 'jim1', 9, 'vendor');
+insert into users (name, email, username,password, role)
+values ('jim', 'jim12@gmail.com', 'bigjim', 'jim1', 'vendor');
 
-insert into users (name, email, username,password, userid, role)
-values ('clairel', 'claire12@gmail.com', 'bigclaire', 'claire1', 10, 'vendor');
+insert into users (name, email, username,password, role)
+values ('clairel', 'claire12@gmail.com', 'bigclaire', 'claire1', 'vendor');
 
 
 SHOW TABLES;
@@ -175,9 +185,9 @@ INSERT INTO warranty (expire_date) VALUES
 INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
 ("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8),
 ("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 9),
-("No‑Show Socks", "A pair of no-show socks", 30.00, 25, 3, 10),
-("Knee‑High Socks", "A pair of knee-high socks", 15.00, 75, 4, 8),
-("Over‑the‑Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 9),
+("No-Show Socks", "A pair of no-show socks", 30.00, 25, 3, 10),
+("Knee-High Socks", "A pair of knee-high socks", 15.00, 75, 4, 8),
+("Over-the-Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 9),
 ("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 10),
 ("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 8),
 ("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 9),
@@ -355,4 +365,48 @@ WHERE cartitem.cartid = 1;
 
 
 
+--review
+INSERT INTO review (userid, productid, rating, reviewtext) VALUES
+(3, 1, '5', 'Great quality and very comfortable.'),
+(4, 5, '4', 'Good socks, fit well.'),
+(5, 3, '5', 'Perfect no-show socks, don’t slip.'),
+(6, 7, '3', 'Decent but thinner than expected.'),
+(7, 10, '5', 'Warm and soft, great for winter.');
 
+
+insert into returns (complaint, date, title, orderid, description, image, type)
+values ('Received wrong item', '2026-04-10', 'Wrong Item Received', 
+1, 'I ordered over-the-calf socks but received knee-high socks instead.', 'knee-high-socks.png', 'return');
+
+
+insert into returns (complaint, date, title, orderid, description, image, type) values ('Received defective item', '2026-04-11', 'Defective Item Received',
+2, 'The crew socks I received have holes in them.', 'defective-sock.png', 'warranty');
+
+
+--chat
+INSERT INTO chat (reason, userid) VALUES
+('Question about Crew Socks thickness', 3),
+('Shipping inquiry for Over-the-Calf Socks', 4),
+('Sizing question for No-Show Socks', 5),
+('Asking about Knee-High Socks restock', 6),
+('Material question about Athletic Socks', 7),
+('Care instructions for Wool Socks', 3),
+('Return request for Crew Socks', 4),
+('Durability question about Hiking Socks', 5),
+('Bulk order discount inquiry for Dress Socks', 6),
+('Compression Socks suitability for long flights', 7);
+
+
+INSERT INTO chat (reason, userid) VALUES
+('Response: Crew Socks thickness explanation', 8),
+('Response: Shipping update for Over-the-Calf Socks', 9),
+('Response: No-Show Socks sizing guidance', 10),
+('Response: Knee-High Socks restock info', 8),
+('Response: Athletic Socks material details', 9),
+('Response: Wool Socks care instructions', 10),
+('Response: Crew Socks return approval', 8),
+('Response: Hiking Socks durability info', 9),
+('Response: Dress Socks bulk discount info', 10),
+('Response: Compression Socks flight suitability', 8),
+('Admin support: general assistance offered', 1),
+('Admin support: return request acknowledged', 2);
