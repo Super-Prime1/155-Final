@@ -38,6 +38,8 @@ total decimal(10,2) not null,
 userid int not null,
 FOREIGN KEY (userid) REFERENCES users(userid)
 );
+
+
 create table orders(
 date date not null,
 total decimal (10,2) not null,
@@ -46,6 +48,8 @@ cartid int not null,
 FOREIGN KEY (cartid) REFERENCES cart(cartid),
 orderid int primary key auto_increment 
 );
+
+
 
 create table products(
 title varchar(255) not null,
@@ -108,7 +112,7 @@ quantity int not null
  price decimal(10,2) not null
  )
 
-
+alter table products add column size enum('extra small','small', 'medium','large','extra large');
 
 
 --admin
@@ -160,12 +164,6 @@ SELECT * FROM users;
 SELECT * FROM warranty;
 
 
--- untimed discount on 2
--- products and timed discount on 2 more, some items added
--- to cart in 3 customer accounts, at least 7 orders (with
--- different order status) and 3 shipped orders from at least 3
--- customers some orders must have multiple products from multiple
--- vendors
 
 INSERT INTO warranty (expire_date) VALUES
 ('2027-01-01'),
@@ -174,25 +172,187 @@ INSERT INTO warranty (expire_date) VALUES
 ('2028-06-01');
 
 
-INSERT INTO products (title, description, price, instock, warrantyid) VALUES
-("Crew Socks", "A pair of crew socks", 10.00, 100, 1),
-("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2),
-("No‑Show Socks", "A pair of no-show socks", 30.00, 25, 3),
-("Knee‑High Socks", "A pair of knee-high socks", 15.00, 75, 4),
-("Over‑the‑Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4),
-("Compression Socks", "A pair of compression socks", 12.00, 80, 1),
-("Dress Socks", "A pair of dress socks", 18.00, 60, 2),
-("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3),
-("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4),
-("Wool Socks", "A pair of wool socks", 25.00, 30, 1);
+INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8),
+("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 9),
+("No‑Show Socks", "A pair of no-show socks", 30.00, 25, 3, 10),
+("Knee‑High Socks", "A pair of knee-high socks", 15.00, 75, 4, 8),
+("Over‑the‑Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 9),
+("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 10),
+("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 8),
+("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 9),
+("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4, 10),
+("Wool Socks", "A pair of wool socks", 25.00, 30, 1, 8);
 
 
 
 INSERT INTO discount (length, discountprice, price, productid) VALUES
-('NULL', 8.00, 10.00, 1),
-('NULL', 15.00, 18.00, 7),
+(NULL, 8.00, 10.00, 1),
+(NULL, 15.00, 18.00, 7),
 ('2026-12-31', 16.00, 20.00, 2),
-('2026-12-31', 25.00, 30.00, 3),
+('2026-12-31', 25.00, 30.00, 3);
+
+
+insert into cart (total, userid) 
+values (0.00, 4);
+
+INSERT INTO cartitem (cartid, productid, quantity)
+VALUES
+(1, 5, 2),   -- Over-the-Calf Socks
+(1, 9, 1);   -- Hiking Socks
+
+
+INSERT INTO cart (total, userid)
+VALUES (0.00, 3);
+
+INSERT INTO cartitem (cartid, productid, quantity)
+VALUES
+(2, 1, 2),   -- Crew Socks
+(2, 7, 1);   -- Dress Socks
+
+
+
+INSERT INTO cart (total, userid)
+VALUES (0.00, 5);
+
+INSERT INTO cartitem (cartid, productid, quantity)
+VALUES
+(3, 3, 1),   -- No-Show Socks
+(3, 10, 2);  -- Wool Socks
+
+
+-- ORDER 1 — pending (user 4, cartid 1)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 44.00, 'pending', 1);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(1, 5, 2, 15.00),   -- Over-the-Calf Socks
+(1, 9, 1, 22.00);   -- Hiking Socks
+
+
+-- ORDER 2 — confirmed (user 3, cartid 2)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 38.00, 'confirmed', 2);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(2, 1, 2, 10.00),   -- Crew Socks
+(2, 7, 1, 18.00);   -- Dress Socks
+
+
+-- ORDER 3 — handed to partner (user 5, cartid 3)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 80.00, 'handed to partner', 3);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(3, 3, 1, 30.00),   -- No-Show Socks
+(3, 10, 2, 25.00);  -- Wool Socks
+
+
+-- ORDER 4 — shipped (user 4)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 20.00, 'shipped', 1);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(4, 2, 1, 20.00);   -- Ankle Socks
+
+
+-- ORDER 5 — shipped (user 3)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 12.00, 'shipped', 2);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(5, 6, 1, 12.00);   -- Compression Socks
+
+
+-- ORDER 6 — shipped (user 5)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 14.00, 'shipped', 3);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(6, 8, 1, 14.00);   -- Athletic Socks
+
+
+-- ORDER 7 — pending (multi-vendor, user 4)
+INSERT INTO orders (date, total, orderstatus, cartid)
+VALUES ('2026-04-09', 53.00, 'pending', 1);
+
+INSERT INTO orderitems (orderid, productid, quantity, price)
+VALUES
+(7, 4, 1, 15.00),   -- Knee-High Socks
+(7, 7, 1, 18.00),   -- Dress Socks
+(7, 1, 2, 10.00);   -- Crew Socks
+
+
+
+
+
+--question 5
+
+--log in question
+insert into users (name, email, username,password, userid, role)
+values ('mae', 'mae12@gmail.com', 'bigmae', 'mae1', 11, 'customer') 
+where not excist( select one from user where userid != userid  )
+
+--products
+INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8)
+
+select * from products;
+
+update products set title = "crews socks" where title = "crew socks";
+
+delete from products where title = " crews socks";
+
+--search 
+select * from products where title = "crew socks";
+select * from products where vendorid = 1;
+select * from products where title = "%crew sock%"
+
+--filter
+select * from color where colorid =1;
+select * from products where quanity !=0;
+select * from products where size = "small"
+
+--cart
+insert into cart(items, total, userid)
+values ('crew socks', 100.00, 4);
+
+select * from cart;
+
+update total set total = 200 where total = 100;
+
+delete from cart where user id = 4;
+
+--wish list 
+insert into wishlist(itemid,userid)
+values(1,3);
+
+select * from wishlist;
+
+update wishlist set itemid=4 where itemid=1;
+
+delete from wishlist wjere itemid = 4;
+
+--orders
+update set orderstatus = 'confirmed' where orderid = 1
+
+update set orderstatus = 'shipped' where orderid = 1
+
+SELECT SUM(products.price * cartitem.quantity) AS cart_total
+FROM cartitem
+JOIN products ON cartitem.productid = products.productid
+WHERE cartitem.cartid = 1;
+
+
+
+
+
 
 
 
