@@ -309,6 +309,23 @@ insert into users (name, email, username,password, userid, role)
 values ('mae', 'mae12@gmail.com', 'bigmae', 'mae1', 11, 'customer') 
 where not excist( select one from user where userid != userid  )
 
+
+select * from users;
+
+update users set username="littlejack" where userid=1;
+
+delete from users were userid = 4;
+
+--warranty
+insert into warranty(expire_date)
+values(currrentdate());
+
+select * from warranty;
+
+update warranty set expire_date = currentdate() where warrantyid=1;
+
+delete from warranty where warrantyid = 4;
+
 --products
 INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
 ("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8)
@@ -347,7 +364,7 @@ select * from wishlist;
 
 update wishlist set itemid=4 where itemid=1;
 
-delete from wishlist wjere itemid = 4;
+delete from wishlist where itemid = 4;
 
 --orders
 update set orderstatus = 'confirmed' where orderid = 1
@@ -359,11 +376,12 @@ FROM cartitem
 JOIN products ON cartitem.productid = products.productid
 WHERE cartitem.cartid = 1;
 
+insert into wishlist(itemid,userid)
+values(1,3);
 
+select * from orders;
 
-
-
-
+delete from orders where orderid = 4;
 
 --review
 INSERT INTO review (userid, productid, rating, reviewtext) VALUES
@@ -410,3 +428,44 @@ INSERT INTO chat (reason, userid) VALUES
 ('Response: Compression Socks flight suitability', 8),
 ('Admin support: general assistance offered', 1),
 ('Admin support: return request acknowledged', 2);
+
+select * from chat;
+
+update chat set chatid=4 where chatid=1;
+
+delete from chat wjere chatid = 4;
+
+--returns
+
+insert into returns(complaint,returnid, date, title, orderid, description,image,type)
+values('too small', 1, currentdate(),'size exchange', 1, 'just to small','refund');
+
+select * from returns;
+
+update returns set title="the best" where returnid=1;
+
+delete from returns where returnid = 4;
+
+
+--colors
+
+insert into wishlist(itemid,userid)
+values(1,3);
+
+select * from color;
+
+update color set colorid=4 where productid=1;
+
+delete from color where coloridid = 4;
+
+--orderitems 
+
+insert into orderitems(orderid,productid,quality,price)
+values(1, 1, 1, 10.00);
+
+select * from orderitems;
+
+update orderitems set quanity=4 where orderitemsid=1;
+
+delete from orderitems where orderid = 4;
+
