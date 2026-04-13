@@ -1,0 +1,57 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+<h2>Your Cart</h2>
+
+{% if cart_items %}
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+        </tr>
+
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td>${{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.price * item.quantity }}</td>
+
+            <td>
+                <form action="/cart" method="POST">
+                    <input type="hidden" name="cartitemid" value="{{ item.cartitemid }}">
+                    <input type="hidden" name="action" value="remove_one">
+                    <button type="submit">-</button>
+                </form>
+
+                <form action="/cart" method="POST">
+                    <input type="hidden" name="product_id" value="{{ item.productid }}">
+                    <input type="hidden" name="action" value="add_one">
+                    <button type="submit">+</button>
+                </form>
+
+                <form action="/cart" method="POST">
+                    <input type="hidden" name="cartitemid" value="{{ item.cartitemid }}">
+                    <input type="hidden" name="action" value="remove_all">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Total: ${{ cart_total }}</h3>
+
+    <form action="/checkout" method="GET">
+        <button type="submit">Proceed to Checkout</button>
+    </form>
+
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+
+{% endblock %}

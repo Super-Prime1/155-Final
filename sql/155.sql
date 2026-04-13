@@ -77,13 +77,19 @@ image varchar(500),
 type enum("refund","return","warranty")
 );
 
-create table discount(
-discountid int not null primary key auto_increment,
-length date null,
-discountprice decimal(10,2) not null,
-price decimal(10,2) not null,
-productid int not null,
-FOREIGN KEY (productid) REFERENCES products(productid)
+CREATE TABLE discount (
+    discountid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    length DATE NULL,
+    discountprice DECIMAL(10,2) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE discount_products (
+    discountid INT NOT NULL,
+    productid INT NOT NULL,
+    PRIMARY KEY (discountid, productid),
+    FOREIGN KEY (discountid) REFERENCES discount(discountid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
 );
 
 create table color(
@@ -203,11 +209,13 @@ INSERT INTO products (title, description, price, instock, warrantyid, vendorid) 
 
 
 
-INSERT INTO discount (length, discountprice, price, productid) VALUES
-(NULL, 8.00, 10.00, 1),
-(NULL, 15.00, 18.00, 7),
-('2026-12-31', 16.00, 20.00, 2),
-('2026-12-31', 25.00, 30.00, 3);
+INSERT INTO discount (length, discountprice, price) VALUES
+(NULL, 8.00, 10.00),
+(NULL, 15.00, 18.00),
+('2026-12-31', 16.00, 20.00),
+('2026-12-31', 25.00, 30.00);
+
+
 
 
 insert into cart (total, userid) 
