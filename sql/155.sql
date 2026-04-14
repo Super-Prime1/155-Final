@@ -77,13 +77,19 @@ image varchar(500),
 type enum("refund","return","warranty")
 );
 
-create table discount(
-discountid int not null primary key auto_increment,
-length date null,
-discountprice decimal(10,2) not null,
-price decimal(10,2) not null,
-productid int not null,
-FOREIGN KEY (productid) REFERENCES products(productid)
+CREATE TABLE discount (
+    discountid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    length DATE NULL,
+    discountprice DECIMAL(10,2) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE discount_products (
+    discountid INT NOT NULL,
+    productid INT NOT NULL,
+    PRIMARY KEY (discountid, productid),
+    FOREIGN KEY (discountid) REFERENCES discount(discountid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
 );
 
 create table color(
@@ -203,11 +209,13 @@ INSERT INTO products (title, description, price, instock, warrantyid, vendorid) 
 
 
 
-INSERT INTO discount (length, discountprice, price, productid) VALUES
-(NULL, 8.00, 10.00, 1),
-(NULL, 15.00, 18.00, 7),
-('2026-12-31', 16.00, 20.00, 2),
-('2026-12-31', 25.00, 30.00, 3);
+INSERT INTO discount (length, discountprice, price) VALUES
+(NULL, 8.00, 10.00),
+(NULL, 15.00, 18.00),
+('2026-12-31', 16.00, 20.00),
+('2026-12-31', 25.00, 30.00);
+
+
 
 
 insert into cart (total, userid) 
@@ -350,14 +358,16 @@ select * from products where title = "crew socks";
 select * from products where vendorid = 1;
 select * from products where title LIKE "%crew sock%";
 
+    
 --filter
 select * from color where colorid =1;
 select * from products where instock !=0;
 select * from products where size = "small";
-    
+
+
 --cart
 insert into cart(total, userid)
-values ('crew socks', 100.00, 4);
+values (100.00, 4);
 
 select * from cart;
 
@@ -365,7 +375,8 @@ update cart set total = 200 where total = 100;
 
 delete from cart where userid = 4;
 
---wish list 
+
+--wishlist 
 insert into wishlist(productid, userid)
 values(1,3);
 
@@ -510,6 +521,24 @@ WHERE returnid = 1;
 DELETE FROM returns
 WHERE returnid = 2;
 
+
+
+-- discount crud
+select * from discount;
+
+update discount set discountprice = 5.00 where discountid = 1;
+update discount set length = 00/00/0000 where discountid = 1;
+
+delete from discount where discountid = 1;
+
+
+-- cartitems
+select * from cartitem;
+
+update cartitem set quantity = 5 where cartitemid = 1 and cartid = 1;
+
+
+delete from cartitem where cartitemid = 1;
 
 
 

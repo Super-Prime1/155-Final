@@ -1,0 +1,31 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+{% for p in products %}
+    Product name: {{ p.title }}
+    - ${{ p.price }}
+    - {{ p.description }}
+    - stock: {{ p.instock }}
+    - warranty in years: {{ p.warrantyid }}
+    - product id: {{ p.productid }}
+    - vendor id: {{ p.vendorid }}
+
+    <!-- Add to Cart -->
+    <form action="/shop" method="POST">
+        <input type="hidden" name="product_id" value="{{ p.productid }}">
+        <input type="hidden" name="action" value="add">
+        <button type="submit">Add to Cart</button>
+    </form>
+
+    <!-- Remove from Cart -->
+    <form action="/shop" method="POST">
+        <input type="hidden" name="product_id" value="{{ p.productid }}">
+        <input type="hidden" name="action" value="remove">
+        <button type="submit">Remove from Cart</button>
+    </form>
+
+    <br>
+{% endfor %}
+
+{% endblock %}
