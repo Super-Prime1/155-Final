@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+    <div class="logo-area">
+        <h1 class="logo"> <img src="/static/images/Socktopus_logo.png" alt="Socktopus Logo"></h1>
+        <p class="tagline">Eight arms. Endless socks.</p>
+    </div>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/account">Account</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Signup</a></li>
+        </ul>
+    </nav>
+</header>
+<body>
+
+
+    {% block content %}
+    {% endblock %}
+
+
+
+</body>
+<footer class="footer">
+    <div class="footer-left">
+        <h3>Socktopus</h3>
+        <p>Where every toe gets a hug.</p>
+    </div>
+
+    <div class="footer-links">
+        <ul>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/returns">Returns</a></li>
+            <li><a href="/support">Customer Support</a></li>
+        </ul>
+    </div>
+
+    <div class="footer-copy">
+        <p>© 2026 Socktopus — All Rights Reserved</p>
+    </div>
+</footer>
+    
+</body>
+</html>

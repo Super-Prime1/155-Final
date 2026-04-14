@@ -1,4 +1,74 @@
 {% extends "truetemplate.html" %}
-
 {% block content %}
+
+<main>
+
+<div class="register card">
+    <h1>Join The Soctopus Squad!</h1>
+
+    <div class="toggle-buttons">
+        <button type="button" onclick="showLogin()">Login</button>
+        <button type="button" onclick="showRegister()">Register</button>
+    </div>
+
+    <div id="loginForm" class="login">
+
+        <h2>Login</h2>
+
+        <form method="POST" action="/login">
+            <input type="hidden" name="form_type" value="login">
+
+            <label>Username</label>
+            <input name="username" type="text">
+
+            <label>Password</label>
+            <input name="password" type="password">
+
+            <button type="submit">Sign in!</button>
+        </form>
+    </div>
+
+    <div id="registerForm" class="register_area" style="display: none;">
+
+        <h2>Register</h2>
+
+        <form method="POST" action="/signup">
+            <input type="hidden" name="form_type" value="register">
+
+            <label>Name</label>
+            <input name="name" type="text">
+
+            <label>Email</label>
+            <input name="email" type="email">
+
+            <label>Username</label>
+            <input name="username" type="text">
+
+            <label>Password</label>
+            <input name="password" type="password">
+
+            <label>Role</label>
+            <select name="role">
+                <option value="customer">Customer</option>
+                <option value="admin">Admin</option>
+                <option value="vendor">Vendor</option>
+            </select>
+
+            <button type="submit">Register!</button>
+        </form>
+    </div>
+</div>
+<script>
+function showLogin() {
+    document.getElementById("loginForm").style.display = "block";
+    document.getElementById("registerForm").style.display = "none";
+}
+
+function showRegister() {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+}
+</script>
+
 {% endblock %}
+
