@@ -1,4 +1,14 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
+
+
+<h2>My Account</h2>
+
+<p><strong>Name:</strong> {{ user.name }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Username:</strong> {{ user.username }}</p>
+<p><strong>Password:</strong> ********</p>
+<p><strong>Account Type:</strong> {{ user.role }}</p>
+
 {% endblock %}

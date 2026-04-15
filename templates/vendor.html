@@ -1,0 +1,19 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+<h2>Vendor Dashboard</h2>
+<p>Welcome, Vendor!</p>
+
+<a href="/addprod" class="btn">Add Product</a>
+
+<h3>My Products</h3>
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.title }} - ${{ "%.2f"|format(product.price) }}
+            <a href="/editprod/{{ product.productid }}">Edit</a>
+            <a href="/deleteprod/{{ product.productid }}" style="color:red;">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
