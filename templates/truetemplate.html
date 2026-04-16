@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Socktopus</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -13,18 +13,30 @@
         <h1 class="tagline">Eight arms. Endless socks.</h1>
     </div>
 
-    <nav class="nav">
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/account">Account</a></li>
-            <li><a href="/shop">Shop</a></li>
-            <li><a href="/cart">Cart</a></li>
-            <li><a href="/reviews">review</a></li>
-            <li><a href="/login">Login</a></li>
+<nav class="nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/shop">Shop</a></li>
+        <li><a href="/cart">Cart</a></li>
+        
+        {% if session.get('user_id') %}
+            <!-- User is logged in -->
+            <li><a href="/account">Account ({{ session['username'] }})</a></li>
+            {% if session.get('user_id') and session.get('role') == 'admin' %}
+                <li><a href="/admin">Admin Panel</a></li>
+            {% endif %}
+            {% if session.get('user_id') and session.get('role') == 'vendor' %}
+                <li><a href="/vendor">Vendor Dashboard</a></li>
+            {% endif %}
+            <li><a href="/logout">Logout</a></li>
+        {% else %}
+            <!-- User is NOT logged in -->
             <li><a href="/signup">Signup</a></li>
-            <li><a href="/logout">log out</a></li>
-        </ul>
-    </nav>
+            <li><a href="/login">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
 </header>
 <body>
 

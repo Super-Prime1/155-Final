@@ -1,4 +1,7 @@
+from webbrowser import get
+
 from flask import Flask, render_template, request, redirect, session
+from psutil import users
 from sqlalchemy import create_engine, text
 from werkzeug.security import generate_password_hash,check_password_hash
 
@@ -29,8 +32,6 @@ def login():
             session['username'] = user.username
             session['role'] = user.role
 
-            print(session.get('user_id'))
-
             return redirect('/account')
 
         else:
@@ -57,6 +58,7 @@ def signup():
         if existing_user:
             return "User already exists"
 
+        # Insert new user
         sql = text("""
             INSERT INTO users (name, email, username, password, role)
             VALUES (:name, :email, :username, :password, :role)
@@ -69,8 +71,17 @@ def signup():
             'password': password,
             'role': role
         })
-
         conn.commit()
+
+        # New cart for user
+        new_user_id = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+
+        conn.execute(text("""
+            INSERT INTO cart (userid)
+            VALUES (:uid)
+        """), {"uid": new_user_id})
+        conn.commit()
+
         return redirect('/signup')
 
     return render_template('signup.html')
@@ -78,7 +89,21 @@ def signup():
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
-    return render_template('account.html')
+
+    # User must be logged in
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    # Fetch the user's info
+    user = conn.execute(text("""
+        SELECT * FROM users WHERE userid = :uid
+    """), {"uid": session['user_id']}).mappings().fetchone()
+
+    # If somehow no user is found (rare but safe)
+    if not user:
+        return redirect('/logout')
+
+    return render_template('account.html', user=user)
 
 
 @app.route('/logout')
@@ -259,10 +284,131 @@ def review_delete(review_id):
 
     return redirect('/reviews')
 
-@app.route('/debug')
-def debug():
-    return str(session)
+@app.route('/admin')
+def admin():    
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
 
+    return render_template('admin.html')
+
+@app.route('/vendor', methods=['GET', 'POST'])
+def vendor():
+
+    # Only vendors can access this page
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    # Fetch all products owned by this vendor
+    products = conn.execute(text("""
+        SELECT * FROM products
+        WHERE vendorid = :vid
+    """), {"vid": session['user_id']}).mappings().fetchall()
+
+    return render_template('vendor.html', products=products)
+
+
+@app.route('/editprod/<int:pid>', methods=['GET'])
+def editprod(pid):
+
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    product = conn.execute(text("""
+        SELECT * FROM products
+        WHERE productid = :pid AND vendorid = :vid
+    """), {"pid": pid, "vid": session['user_id']}).mappings().fetchone()
+
+    if not product:
+        return "Product not found or not yours", 404
+
+    return render_template('editprod.html', product=product)
+
+@app.route('/editprod/<int:pid>', methods=['POST'])
+def updateprod(pid):
+
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    conn.execute(text("""
+        UPDATE products
+        SET title = :title,
+            description = :description,
+            price = :price,
+            instock = :instock,
+            size = :size,
+            warrantyid = :warrantyid,
+            image = :image
+        WHERE productid = :pid AND vendorid = :vid
+    """), {
+        "title": request.form['title'],
+        "description": request.form['description'],
+        "price": request.form['price'],
+        "instock": request.form['instock'],
+        "size": request.form['size'],
+        "warrantyid": request.form['warrantyid'],
+        "image": request.form['image'],
+        "pid": pid,
+        "vid": session['user_id']
+    })
+
+    conn.commit()
+
+    return redirect('/vendor')
+
+@app.route('/addprod', methods=['GET'])
+def addprod():
+
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    return render_template('addprod.html')
+
+@app.route('/addprod', methods=['POST'])
+def saveprod():
+
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    conn.execute(text("""
+        INSERT INTO products (title, description, price, instock, size, warrantyid, image, vendorid)
+        VALUES (:title, :description, :price, :instock, :size, :warrantyid, :image, :vendorid)
+    """), {
+        "title": request.form['title'],
+        "description": request.form['description'],
+        "price": request.form['price'],
+        "instock": request.form['instock'],
+        "size": request.form['size'],
+        "warrantyid": request.form['warrantyid'],
+        "image": request.form['image'],
+        "vendorid": session['user_id']
+    })
+
+    conn.commit()
+    return redirect('/vendor')
+
+
+@app.route('/deleteprod/<int:pid>')
+def deleteprod(pid):
+
+    if 'role' not in session or session['role'] != 'vendor':
+        return redirect('/')
+
+    # Delete from dependent tables first
+    conn.execute(text("DELETE FROM cartitem WHERE productid = :pid"), {"pid": pid})
+    conn.execute(text("DELETE FROM orderitems WHERE productid = :pid"), {"pid": pid})
+    conn.execute(text("DELETE FROM discount_products WHERE productid = :pid"), {"pid": pid})
+    conn.execute(text("DELETE FROM color WHERE productid = :pid"), {"pid": pid})
+    conn.execute(text("DELETE FROM review WHERE productid = :pid"), {"pid": pid})
+    conn.execute(text("DELETE FROM wishlist WHERE productid = :pid"), {"pid": pid})
+
+    # Now delete the product
+    conn.execute(text("""
+        DELETE FROM products
+        WHERE productid = :pid AND vendorid = :vid
+    """), {"pid": pid, "vid": session['user_id']})
+
+    conn.commit()
+    return redirect('/vendor')
 
 
 if __name__ == '__main__':
