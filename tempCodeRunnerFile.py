@@ -1,58 +1,41 @@
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/reviews', methods=['GET', 'POST'])
+def reviews():
+    if 'username' not in session:
+         return redirect('/signup')
+    
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        sql = text("SELECT * FROM users WHERE username = :username")
-        user = conn.execute(sql, {'username': username}).fetchone()
-
-        if user and check_password_hash(user.password, password):
-
-            session['user_id'] = user.userid
-            session['username'] = user.username
-            session['role'] = user.role
-
-            return redirect('/dashboard')
-
-        else:
-            return render_template('login.html', error="Invalid login")
-
-    return render_template('login.html') 
-
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        name = request.form['name']
-        email = request.form['email']
-        password = generate_password_hash(request.form['password'])
-        role = request.form['role']
-
-        check_sql = text("SELECT * FROM users WHERE email = :email OR username = :username")
-        existing_user = conn.execute(check_sql, {
-            'email': email,
-            'username': username
-        }).fetchone()
-
-        if existing_user:
-            return "User already exists"
-
+        name = session.get('username')
+        comment = request.form['comment_box']
+        rating = request.form['rating']
+        userid = session.get('user_id')
+        productid = 21
         sql = text("""
-            INSERT INTO users (name, email, username, password, role)
-            VALUES (:name, :email, :username, :password, :role)
+        insert into review (productid, userid, name, reviewtext, rating)
+        values(:productid, :userid, :name, :reviewtext, :rating)
         """)
 
-        conn.execute(sql, {
-            'name': name,
-            'email': email,
-            'username': username,
-            'password': password,
-            'role': role
+        conn.execute(sql,{
+            'productid':productid,
+            'userid':userid,
+            'name':name,
+            'reviewtext':comment,
+            'rating':rating
         })
 
         conn.commit()
-        return redirect('/signup')
+        return redirect('/reviews')
+    
+    sql = text('select * from review')
+    result = conn.execute(sql).fetchall()
 
-    return render_template('signup.html')
+    return render_template('reviews.html',reviews = result)
+
+
+
+@app.route('/delete_review/<int:review_id>', methods=['POST'])
+def review_delete(review_id):
+    sql = text("delete from review where reviewid = :id")
+    conn.execute(sql,{'id' : review_id})
+    conn.commit()
+
+    return redirect('/reviews')

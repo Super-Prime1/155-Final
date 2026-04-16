@@ -1,0 +1,51 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+
+<div class="reviewcard">
+    <form method="post" action="/reviews">
+        <div class="review_top">
+            <h1>Warning: bad reviews may be ink-cluded!</h1>
+            
+        </div>
+        <label>comment</label>
+        <input type="text" name="comment_box" placeholder="enter your comment!">
+
+        <select name="rating" id="review_rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <button type="submit">submit</button>
+    </form>
+</div>
+
+<div class="all_reviews">
+    
+        {%for r in reviews%}
+        <div class="reviews">
+            <h3>{{r.name}}</h3>
+            <p>{{r.reviewtext}}</p>
+            <p> rating:{% for i in range(r.rating|int) %}
+                🦑 
+                {% endfor %}
+            </p>
+
+            <form method="post" action="/delete_review/{{r.reviewid}}">
+            <button type="submit" class="delte_btn">delete</button>
+            </form>
+
+        </div>
+        {% endfor %}
+</div>
+
+
+
+
+
+
+
+{% endblock %}

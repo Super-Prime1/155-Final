@@ -77,13 +77,19 @@ image varchar(500),
 type enum("refund","return","warranty")
 );
 
-create table discount(
-discountid int not null primary key auto_increment,
-length date null,
-discountprice decimal(10,2) not null,
-price decimal(10,2) not null,
-productid int not null,
-FOREIGN KEY (productid) REFERENCES products(productid)
+CREATE TABLE discount (
+    discountid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    length DATE NULL,
+    discountprice DECIMAL(10,2) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE discount_products (
+    discountid INT NOT NULL,
+    productid INT NOT NULL,
+    PRIMARY KEY (discountid, productid),
+    FOREIGN KEY (discountid) REFERENCES discount(discountid),
+    FOREIGN KEY (productid) REFERENCES products(productid)
 );
 
 create table color(
@@ -190,24 +196,26 @@ INSERT INTO warranty (expire_date) VALUES
 
 
 INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
-("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8),
-("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 9),
-("No-Show Socks", "A pair of no-show socks", 30.00, 25, 3, 10),
-("Knee-High Socks", "A pair of knee-high socks", 15.00, 75, 4, 8),
-("Over-the-Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 9),
-("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 10),
-("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 8),
-("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 9),
-("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4, 10),
-("Wool Socks", "A pair of wool socks", 25.00, 30, 1, 8);
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 13),
+("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 13),
+("No-Show Socks", "A pair of no-show socks", 30.00, 25, 3, 13),
+("Knee-High Socks", "A pair of knee-high socks", 15.00, 75, 4, 13),
+("Over-the-Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 13),
+("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 13),
+("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 13),
+("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 13),
+("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4, 13),
+("Wool Socks", "A pair of wool socks", 25.00, 30, 1, 13);
 
 
 
-INSERT INTO discount (length, discountprice, price, productid) VALUES
-(NULL, 8.00, 10.00, 1),
-(NULL, 15.00, 18.00, 7),
-('2026-12-31', 16.00, 20.00, 2),
-('2026-12-31', 25.00, 30.00, 3);
+INSERT INTO discount (length, discountprice, price) VALUES
+(NULL, 8.00, 10.00),
+(NULL, 15.00, 18.00),
+('2026-12-31', 16.00, 20.00),
+('2026-12-31', 25.00, 30.00);
+
+
 
 
 insert into cart (total, userid) 
@@ -350,14 +358,16 @@ select * from products where title = "crew socks";
 select * from products where vendorid = 1;
 select * from products where title LIKE "%crew sock%";
 
+    
 --filter
 select * from color where colorid =1;
 select * from products where instock !=0;
 select * from products where size = "small";
-    
+
+
 --cart
 insert into cart(total, userid)
-values ('crew socks', 100.00, 4);
+values (100.00, 4);
 
 select * from cart;
 
@@ -365,7 +375,8 @@ update cart set total = 200 where total = 100;
 
 delete from cart where userid = 4;
 
---wish list 
+
+--wishlist 
 insert into wishlist(productid, userid)
 values(1,3);
 
@@ -510,6 +521,24 @@ WHERE returnid = 1;
 DELETE FROM returns
 WHERE returnid = 2;
 
+
+
+-- discount crud
+select * from discount;
+
+update discount set discountprice = 5.00 where discountid = 1;
+update discount set length = 00/00/0000 where discountid = 1;
+
+delete from discount where discountid = 1;
+
+
+-- cartitems
+select * from cartitem;
+
+update cartitem set quantity = 5 where cartitemid = 1 and cartid = 1;
+
+
+delete from cartitem where cartitemid = 1;
 
 
 

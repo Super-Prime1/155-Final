@@ -1,0 +1,47 @@
+{% extends "truetemplate.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="shop-container">
+
+    {% for p in products %}
+    <div class="product-card">
+
+        <h2 class="product-title">{{ p.title }}</h2>
+
+        <p class="product-price">${{ p.price }}</p>
+        <p class="product-desc">{{ p.description }}</p>
+
+        <p class="product-meta">
+            <span>Stock: {{ p.instock }}</span>
+            <span>Warranty: {{ p.warrantyid }} years</span>
+            <span>Product ID: {{ p.productid }}</span>
+            <span>Vendor ID: {{ p.vendorid }}</span>
+        </p>
+
+        <div class="product-buttons">
+
+            <form action="/shop" method="POST">
+                <input type="hidden" name="product_id" value="{{ p.productid }}">
+                <input type="hidden" name="action" value="add">
+                <button type="submit" class="btn add-btn">Add to Cart</button>
+            </form>
+
+            <form action="/shop" method="POST">
+                <input type="hidden" name="product_id" value="{{ p.productid }}">
+                <input type="hidden" name="action" value="remove">
+                <button type="submit" class="btn remove-btn">Remove</button>
+            </form>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
