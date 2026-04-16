@@ -1,0 +1,12 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+<h2>Order Placed Successfully!</h2>
+
+<p><strong>Order ID:</strong> {{ order_id }}</p>
+<p><strong>Total:</strong> ${{ "%.2f"|format(total) }}</p>
+
+<a href="/shop">
+    <button>Continue Shopping</button>
+</a>
+{% endblock %}

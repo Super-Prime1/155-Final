@@ -217,13 +217,6 @@ def cart():
                 WHERE quantity <= 0
             """))
 
-        elif action == 'remove_all':
-            cartitemid = request.form['cartitemid']
-            conn.execute(text("""
-                DELETE FROM cartitem
-                WHERE cartitemid = :cid
-            """), {"cid": cartitemid})
-
         return redirect('/cart')
 
     # GET request → load cart
@@ -409,6 +402,75 @@ def deleteprod(pid):
 
     conn.commit()
     return redirect('/vendor')
+
+
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    cartid = session.get('cartid')
+
+    if not cartid:
+        return redirect('/cart')
+
+    # Get cart items
+    cart_items = conn.execute(text("""
+        SELECT c.cartitemid, c.quantity,
+               p.productid, p.title, p.price
+        FROM cartitem c
+        JOIN products p ON c.productid = p.productid
+        WHERE c.cartid = :cid
+    """), {"cid": cartid}).mappings().fetchall()
+
+    if not cart_items:
+        return "Cart is empty"
+
+    # Calculate total
+    total = sum(item.price * item.quantity for item in cart_items)
+
+    if request.method == 'POST':
+
+        from datetime import date
+
+        # Insert into orders
+        result = conn.execute(text("""
+            INSERT INTO orders (date, total, orderstatus, cartid)
+            VALUES (:date, :total, :status, :cartid)
+        """), {
+            "date": date.today(),
+            "total": total,
+            "status": "pending",
+            "cartid": cartid
+        })
+        conn.commit()
+
+        # Get new order ID
+        order_id = result.lastrowid
+
+        # Insert into orderitems
+        for item in cart_items:
+            conn.execute(text("""
+                INSERT INTO orderitems (orderid, productid, quantity, price)
+                VALUES (:oid, :pid, :qty, :price)
+            """), {
+                "oid": order_id,
+                "pid": item.productid,
+                "qty": item.quantity,
+                "price": item.price
+            })
+
+        # Clear cart
+        conn.execute(text("""
+            DELETE FROM cartitem WHERE cartid = :cid
+        """), {"cid": cartid})
+
+        conn.commit()
+
+        return render_template("checkoutfinal.html", total=total, order_id=order_id)
+
+    return render_template('checkout.html', cart_items=cart_items, total=total)
 
 
 if __name__ == '__main__':
