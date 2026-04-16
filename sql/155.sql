@@ -196,16 +196,16 @@ INSERT INTO warranty (expire_date) VALUES
 
 
 INSERT INTO products (title, description, price, instock, warrantyid, vendorid) VALUES
-("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 8),
-("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 9),
-("No-Show Socks", "A pair of no-show socks", 30.00, 25, 3, 10),
-("Knee-High Socks", "A pair of knee-high socks", 15.00, 75, 4, 8),
-("Over-the-Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 9),
-("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 10),
-("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 8),
-("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 9),
-("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4, 10),
-("Wool Socks", "A pair of wool socks", 25.00, 30, 1, 8);
+("Crew Socks", "A pair of crew socks", 10.00, 100, 1, 13),
+("Ankle Socks", "A pair of ankle socks", 20.00, 50, 2, 13),
+("No-Show Socks", "A pair of no-show socks", 30.00, 25, 3, 13),
+("Knee-High Socks", "A pair of knee-high socks", 15.00, 75, 4, 13),
+("Over-the-Calf Socks", "A pair of over-the-calf socks", 15.00, 75, 4, 13),
+("Compression Socks", "A pair of compression socks", 12.00, 80, 1, 13),
+("Dress Socks", "A pair of dress socks", 18.00, 60, 2, 13),
+("Athletic Socks", "A pair of athletic socks", 14.00, 90, 3, 13),
+("Hiking Socks", "A pair of hiking socks", 22.00, 40, 4, 13),
+("Wool Socks", "A pair of wool socks", 25.00, 30, 1, 13);
 
 
 
