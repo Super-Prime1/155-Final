@@ -1,0 +1,22 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+<div class="edit-container">
+
+<h2>Edit {{ table }}</h2>
+
+<form method="POST">
+    {% for key, value in row.items() %}
+        {% if key.endswith("id") %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% else %}
+            <label>{{ key }}</label>
+            <input type="text" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+    {% endfor %}
+
+    <button type="submit">Save Changes</button>
+</form>
+
+</div>
+{% endblock %}

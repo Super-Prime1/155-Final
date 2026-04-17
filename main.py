@@ -217,13 +217,6 @@ def cart():
                 WHERE quantity <= 0
             """))
 
-        elif action == 'remove_all':
-            cartitemid = request.form['cartitemid']
-            conn.execute(text("""
-                DELETE FROM cartitem
-                WHERE cartitemid = :cid
-            """), {"cid": cartitemid})
-
         return redirect('/cart')
 
     # GET request → load cart
@@ -312,12 +305,93 @@ def review_delete(review_id):
 
     return redirect('/reviews')
 
+
+
+
 @app.route('/admin')
-def admin():    
+def admin():
     if 'role' not in session or session['role'] != 'admin':
         return redirect('/')
 
-    return render_template('admin.html')
+    filter_section = request.args.get('section', 'all')
+
+    allusers = conn.execute(text("SELECT * FROM users")).fetchall()
+    allproducts = conn.execute(text("SELECT * FROM products")).fetchall()
+    allorders = conn.execute(text("SELECT * FROM orders")).fetchall()
+    allreviews = conn.execute(text("SELECT * FROM review")).fetchall()
+    allreturns = conn.execute(text("SELECT * FROM returns")).fetchall()
+    allwarranties = conn.execute(text("SELECT * FROM warranty")).fetchall()
+    alldiscounts = conn.execute(text("SELECT * FROM discount")).fetchall()
+
+    return render_template(
+        'admin.html',
+        filter_section=filter_section,
+        allusers=allusers,
+        allproducts=allproducts,
+        allorders=allorders,
+        allreviews=allreviews,
+        allreturns=allreturns,
+        allwarranties=allwarranties,
+        alldiscounts=alldiscounts
+    )
+
+@app.route('/admin/edit/<table>/<int:item_id>', methods=['GET'])
+def admin_edit(table, item_id):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    table_map = {
+        "user": ("users", "userid"),
+        "product": ("products", "productid"),
+        "order": ("orders", "orderid"),
+        "review": ("review", "reviewid"),
+        "return": ("returns", "returnid"),
+        "warranty": ("warranty", "warrantyid"),
+        "discount": ("discount", "discountid")
+    }
+
+    table_name, pk = table_map[table]
+
+    result = conn.execute(
+        text(f"SELECT * FROM {table_name} WHERE {pk} = :id"),
+        {"id": item_id}
+    )
+
+    row = result.mappings().fetchone()
+
+    return render_template("adminedit.html", table=table, row=row)
+
+
+@app.route('/admin/edit/<table>/<int:item_id>', methods=['POST'])
+def admin_edit_post(table, item_id):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    data = dict(request.form)
+
+    table_map = {
+        "user": ("users", "userid"),
+        "product": ("products", "productid"),
+        "order": ("orders", "orderid"),
+        "review": ("review", "reviewid"),
+        "return": ("returns", "returnid"),
+        "warranty": ("warranty", "warrantyid"),
+        "discount": ("discount", "discountid")
+    }
+
+    table_name, pk = table_map[table]
+
+    set_clause = ", ".join([f"{key} = :{key}" for key in data.keys()])
+    data["id"] = item_id
+
+    conn.execute(
+        text(f"UPDATE {table_name} SET {set_clause} WHERE {pk} = :id"),
+        data
+    )
+    conn.commit()
+
+    return redirect('/admin')
+
 
 @app.route('/vendor', methods=['GET', 'POST'])
 def vendor():
@@ -439,6 +513,74 @@ def deleteprod(pid):
     return redirect('/vendor')
 
 
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    cartid = session.get('cartid')
+
+    if not cartid:
+        return redirect('/cart')
+
+    # Get cart items
+    cart_items = conn.execute(text("""
+        SELECT c.cartitemid, c.quantity,
+               p.productid, p.title, p.price
+        FROM cartitem c
+        JOIN products p ON c.productid = p.productid
+        WHERE c.cartid = :cid
+    """), {"cid": cartid}).mappings().fetchall()
+
+    if not cart_items:
+        return "Cart is empty"
+
+    # Calculate total
+    total = sum(item.price * item.quantity for item in cart_items)
+
+    if request.method == 'POST':
+
+        from datetime import date
+
+        # Insert into orders
+        result = conn.execute(text("""
+            INSERT INTO orders (date, total, orderstatus, cartid)
+            VALUES (:date, :total, :status, :cartid)
+        """), {
+            "date": date.today(),
+            "total": total,
+            "status": "pending",
+            "cartid": cartid
+        })
+        conn.commit()
+
+        # Get new order ID
+        order_id = result.lastrowid
+
+        # Insert into orderitems
+        for item in cart_items:
+            conn.execute(text("""
+                INSERT INTO orderitems (orderid, productid, quantity, price)
+                VALUES (:oid, :pid, :qty, :price)
+            """), {
+                "oid": order_id,
+                "pid": item.productid,
+                "qty": item.quantity,
+                "price": item.price
+            })
+
+        # Clear cart
+        conn.execute(text("""
+            DELETE FROM cartitem WHERE cartid = :cid
+        """), {"cid": cartid})
+
+        conn.commit()
+
+        return render_template("checkoutfinal.html", total=total, order_id=order_id)
+
+    return render_template('checkout.html', cart_items=cart_items, total=total)
+  
 @app.route('/warranty')
 def warranty():
 
