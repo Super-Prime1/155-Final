@@ -1,4 +1,4 @@
-/* sihn up css */
+/* sign up css */
 .register.card {
     width: 500px;
     margin: 50px auto;
@@ -193,7 +193,7 @@
 .shop-container {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column ;
+    flex-direction: row;
     gap: 25px;
     padding: 20px;
 }
@@ -321,4 +321,180 @@
 .delete_btn {
     margin-top: 5px;
     padding: 5px;
+}
+
+/* Admin Panel */
+
+/* Admin Container */
+.admin-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 25px;
+    background: #ffffff;
+}
+
+/* Headings */
+.admin-container h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.admin-container h3 {
+    margin-top: 35px;
+    font-size: 22px;
+    color: #333;
+    border-bottom: 2px solid #e3e3e3;
+    padding-bottom: 6px;
+}
+
+/* Filter Dropdown */
+.admin-filter {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-filter select {
+    padding: 8px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-filter select:hover {
+    border-color: #888;
+}
+
+/* List Styling */
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.admin-list li {
+    background: #f8f8f8;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #e1e1e1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.admin-list li:hover {
+    background: #f1f1f1;
+    border-color: #ccc;
+}
+
+/* Edit/Delete Buttons */
+.admin-list a {
+    margin-left: 12px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+/* Edit Button */
+.admin-list a[href*="edit"] {
+    background: #007bff;
+    color: white;
+}
+
+.admin-list a[href*="edit"]:hover {
+    background: #005fcc;
+}
+
+/* Delete Button */
+.admin-list a[href*="delete"] {
+    background: #dc3545;
+    color: white;
+}
+
+.admin-list a[href*="delete"]:hover {
+    background: #b52a36;
+}
+
+/* Horizontal Rule */
+.admin-container hr {
+    margin: 25px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+
+/* Admin Edit Form */
+
+/* Edit Page Container */
+.edit-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e3e3e3;
+}
+
+/* Heading */
+.edit-container h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #222;
+    text-align: center;
+}
+
+/* Labels */
+.edit-container label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* Inputs */
+.edit-container input[type="text"],
+.edit-container input[type="number"],
+.edit-container input[type="date"],
+.edit-container textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.edit-container input:focus,
+.edit-container textarea:focus {
+    border-color: #007bff;
+    background: #fff;
+    outline: none;
+}
+
+/* Save Button */
+.edit-container button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-container button:hover {
+    background: #005fcc;
 }

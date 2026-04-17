@@ -277,12 +277,93 @@ def review_delete(review_id):
 
     return redirect('/reviews')
 
+
+
+
 @app.route('/admin')
-def admin():    
+def admin():
     if 'role' not in session or session['role'] != 'admin':
         return redirect('/')
 
-    return render_template('admin.html')
+    filter_section = request.args.get('section', 'all')
+
+    allusers = conn.execute(text("SELECT * FROM users")).fetchall()
+    allproducts = conn.execute(text("SELECT * FROM products")).fetchall()
+    allorders = conn.execute(text("SELECT * FROM orders")).fetchall()
+    allreviews = conn.execute(text("SELECT * FROM review")).fetchall()
+    allreturns = conn.execute(text("SELECT * FROM returns")).fetchall()
+    allwarranties = conn.execute(text("SELECT * FROM warranty")).fetchall()
+    alldiscounts = conn.execute(text("SELECT * FROM discount")).fetchall()
+
+    return render_template(
+        'admin.html',
+        filter_section=filter_section,
+        allusers=allusers,
+        allproducts=allproducts,
+        allorders=allorders,
+        allreviews=allreviews,
+        allreturns=allreturns,
+        allwarranties=allwarranties,
+        alldiscounts=alldiscounts
+    )
+
+@app.route('/admin/edit/<table>/<int:item_id>', methods=['GET'])
+def admin_edit(table, item_id):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    table_map = {
+        "user": ("users", "userid"),
+        "product": ("products", "productid"),
+        "order": ("orders", "orderid"),
+        "review": ("review", "reviewid"),
+        "return": ("returns", "returnid"),
+        "warranty": ("warranty", "warrantyid"),
+        "discount": ("discount", "discountid")
+    }
+
+    table_name, pk = table_map[table]
+
+    result = conn.execute(
+        text(f"SELECT * FROM {table_name} WHERE {pk} = :id"),
+        {"id": item_id}
+    )
+
+    row = result.mappings().fetchone()
+
+    return render_template("adminedit.html", table=table, row=row)
+
+
+@app.route('/admin/edit/<table>/<int:item_id>', methods=['POST'])
+def admin_edit_post(table, item_id):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    data = dict(request.form)
+
+    table_map = {
+        "user": ("users", "userid"),
+        "product": ("products", "productid"),
+        "order": ("orders", "orderid"),
+        "review": ("review", "reviewid"),
+        "return": ("returns", "returnid"),
+        "warranty": ("warranty", "warrantyid"),
+        "discount": ("discount", "discountid")
+    }
+
+    table_name, pk = table_map[table]
+
+    set_clause = ", ".join([f"{key} = :{key}" for key in data.keys()])
+    data["id"] = item_id
+
+    conn.execute(
+        text(f"UPDATE {table_name} SET {set_clause} WHERE {pk} = :id"),
+        data
+    )
+    conn.commit()
+
+    return redirect('/admin')
+
 
 @app.route('/vendor', methods=['GET', 'POST'])
 def vendor():
@@ -471,7 +552,6 @@ def checkout():
         return render_template("checkoutfinal.html", total=total, order_id=order_id)
 
     return render_template('checkout.html', cart_items=cart_items, total=total)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
