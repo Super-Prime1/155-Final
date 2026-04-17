@@ -542,4 +542,11 @@ delete from cartitem where cartitemid = 1;
 
 
 
+-- reviews fix 
+ALTER TABLE review
+ADD name VARCHAR(255);
+
+alter table review add column created_at  DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+
 

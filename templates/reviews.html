@@ -4,11 +4,23 @@
 
 
 <div class="reviewcard">
-    <form method="post" action="/reviews">
-        <div class="review_top">
-            <h1>Warning: bad reviews may be ink-cluded!</h1>
-            
-        </div>
+    <h1>Warning: bad reviews may be ink-cluded!</h1>
+    <div class="review_top">
+    <form method="GET" action="/reviews">
+            <label> filter reviews!</label>
+            <select name="filter_by">
+                <option value="newest">newest</option>
+                <option value="oldest">oldest</option>
+                <option value="rating">rating</option>
+            </select>
+            <button type="submit">filter</button>
+        </form>
+     </div>
+    
+
+        <form method="POST" action="/reviews">
+        <label>product ID</label>
+        <input type="number" name="productid" placeholder="enter your product ID!">
         <label>comment</label>
         <input type="text" name="comment_box" placeholder="enter your comment!">
 
@@ -28,7 +40,9 @@
         {%for r in reviews%}
         <div class="reviews">
             <h3>{{r.name}}</h3>
+            <h4>{{r.product_name}}</h4>
             <p>{{r.reviewtext}}</p>
+            <p>{{r.created_at}}</p>
             <p> rating:{% for i in range(r.rating|int) %}
                 🦑 
                 {% endfor %}
