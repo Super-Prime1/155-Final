@@ -1,14 +1,25 @@
 @app.route('/reviews', methods=['GET', 'POST'])
 def reviews():
-    if 'username' not in session:
-         return redirect('/signup')
+    if not session.get('user_id'):
+        return redirect('/signup')
     
     if request.method == 'POST':
         name = session.get('username')
         comment = request.form['comment_box']
         rating = request.form['rating']
         userid = session.get('user_id')
-        productid = 21
+        productid = request.form['productid']
+        
+        sql_check = text("""
+        select productid from products where productid =:productid
+        """)
+
+        result= conn.execute(sql_check,{'productid':productid}).fetchone()
+
+        if not result:
+            return "invalid product"
+
+
         sql = text("""
         insert into review (productid, userid, name, reviewtext, rating)
         values(:productid, :userid, :name, :reviewtext, :rating)
@@ -25,17 +36,9 @@ def reviews():
         conn.commit()
         return redirect('/reviews')
     
-    sql = text('select * from review')
+    sql = text("""
+         select r.reviewid, r.reviewtext,r.rating,r.name,r.created_at,p.title as product_name from review r join products p on r.productid = p.productid
+        """)
     result = conn.execute(sql).fetchall()
 
     return render_template('reviews.html',reviews = result)
-
-
-
-@app.route('/delete_review/<int:review_id>', methods=['POST'])
-def review_delete(review_id):
-    sql = text("delete from review where reviewid = :id")
-    conn.execute(sql,{'id' : review_id})
-    conn.commit()
-
-    return redirect('/reviews')
