@@ -17,8 +17,9 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/shop">Shop</a></li>
-        <li><a href="/cart">Cart</a></li>
-        
+        <li><a href="/cart">
+  <img src="/static/images/funny cart doodle.png" alt="Cart" style="width:50px; height:auto;"></a></li>
+
         {% if session.get('user_id') %}
             <!-- User is logged in -->
             <li><a href="/account">Account ({{ session['username'] }})</a></li>

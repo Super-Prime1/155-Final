@@ -90,20 +90,33 @@ def signup():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
 
-    # User must be logged in
     if 'user_id' not in session:
         return redirect('/login')
 
-    # Fetch the user's info
-    user = conn.execute(text("""
-        SELECT * FROM users WHERE userid = :uid
-    """), {"uid": session['user_id']}).mappings().fetchone()
+    uid = session['user_id']
 
-    # If somehow no user is found (rare but safe)
+    # Fetch user info
+    user = conn.execute(
+        text("SELECT * FROM users WHERE userid = :uid"),
+        {"uid": uid}
+    ).mappings().fetchone()
+
     if not user:
         return redirect('/logout')
 
-    return render_template('account.html', user=user)
+    # Fetch user's orders (JOIN cart → orders)
+    userorders = conn.execute(
+        text("""
+            SELECT o.orderid, o.total, o.date, o.orderstatus
+            FROM orders o
+            JOIN cart c ON o.cartid = c.cartid
+            WHERE c.userid = :uid
+            ORDER BY o.date DESC
+        """),
+        {"uid": uid}
+    ).mappings().fetchall()
+
+    return render_template('account.html', user=user, orders=userorders)
 
 
 @app.route('/logout')
@@ -524,7 +537,7 @@ def checkout():
     if not cartid:
         return redirect('/cart')
 
-    # Get cart items
+    # Get cart items (FULL DATA)
     cart_items = conn.execute(text("""
         SELECT c.cartitemid, c.quantity,
                p.productid, p.title, p.price
@@ -543,7 +556,7 @@ def checkout():
 
         from datetime import date
 
-        # Insert into orders
+        # Insert order
         result = conn.execute(text("""
             INSERT INTO orders (date, total, orderstatus, cartid)
             VALUES (:date, :total, :status, :cartid)
@@ -555,10 +568,22 @@ def checkout():
         })
         conn.commit()
 
-        # Get new order ID
         order_id = result.lastrowid
 
-        # Insert into orderitems
+        # Subtract stock for each product
+        for item in cart_items:
+            conn.execute(text("""
+                UPDATE products
+                SET instock = instock - :qty
+                WHERE productid = :pid
+            """), {
+                "qty": item.quantity,
+                "pid": item.productid
+            })
+
+        conn.commit()
+
+        # Insert order items
         for item in cart_items:
             conn.execute(text("""
                 INSERT INTO orderitems (orderid, productid, quantity, price)

@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 <h2>My Account</h2>
 
 <p><strong>Name:</strong> {{ user.name }}</p>
@@ -10,5 +9,21 @@
 <p><strong>Username:</strong> {{ user.username }}</p>
 <p><strong>Password:</strong> ********</p>
 <p><strong>Account Type:</strong> {{ user.role }}</p>
+
+<h2>My Orders</h2>
+
+{% if orders %}
+    <ul>
+        {% for order in orders %}
+            <li>
+                <strong>Order ID:</strong> {{ order.orderid }}<br>
+                <strong>Total:</strong> ${{ "%.2f"|format(order.total) }}<br>
+                <strong>Date:</strong> {{ order.date }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no orders yet.</p>
+{% endif %}
 
 {% endblock %}

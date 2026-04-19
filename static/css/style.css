@@ -406,12 +406,12 @@
 
 /* Edit Button */
 .admin-list a[href*="edit"] {
-    background: #007bff;
+    background: #30ad99;
     color: white;
 }
 
 .admin-list a[href*="edit"]:hover {
-    background: #005fcc;
+    background: #1c665a;
 }
 
 /* Delete Button */
@@ -477,7 +477,7 @@
 
 .edit-container input:focus,
 .edit-container textarea:focus {
-    border-color: #007bff;
+    border-color: #30ad99;
     background: #fff;
     outline: none;
 }
@@ -486,7 +486,7 @@
 .edit-container button {
     width: 100%;
     padding: 12px;
-    background: #007bff;
+    background: #30ad99;
     color: white;
     border: none;
     border-radius: 6px;
@@ -496,5 +496,5 @@
 }
 
 .edit-container button:hover {
-    background: #005fcc;
+    background: #237e6f;
 }
