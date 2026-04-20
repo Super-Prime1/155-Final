@@ -529,15 +529,17 @@ def deleteprod(pid):
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
 
+    # Must be logged in
     if 'user_id' not in session:
         return redirect('/login')
 
     cartid = session.get('cartid')
 
+    # No cart → go back
     if not cartid:
         return redirect('/cart')
 
-    # Get cart items (FULL DATA)
+    # Get cart items
     cart_items = conn.execute(text("""
         SELECT c.cartitemid, c.quantity,
                p.productid, p.title, p.price
@@ -546,18 +548,20 @@ def checkout():
         WHERE c.cartid = :cid
     """), {"cid": cartid}).mappings().fetchall()
 
+    # Empty cart check
     if not cart_items:
-        return "Cart is empty"
+        return redirect('/cart')
 
     # Calculate total
     total = sum(item.price * item.quantity for item in cart_items)
 
+    # PLACE ORDER
     if request.method == 'POST':
 
         from datetime import date
 
-        # Insert order
-        result = conn.execute(text("""
+        # 1. Create order
+        conn.execute(text("""
             INSERT INTO orders (date, total, orderstatus, cartid)
             VALUES (:date, :total, :status, :cartid)
         """), {
@@ -566,12 +570,16 @@ def checkout():
             "status": "pending",
             "cartid": cartid
         })
-        conn.commit()
 
-        order_id = result.lastrowid
+        # 2. Get new order ID safely
+        order_id = conn.execute(
+            text("SELECT LAST_INSERT_ID()")
+        ).scalar()
 
-        # Subtract stock for each product
+        # 3. Insert order items + update stock
         for item in cart_items:
+
+            # reduce stock
             conn.execute(text("""
                 UPDATE products
                 SET instock = instock - :qty
@@ -581,10 +589,7 @@ def checkout():
                 "pid": item.productid
             })
 
-        conn.commit()
-
-        # Insert order items
-        for item in cart_items:
+            # insert order item
             conn.execute(text("""
                 INSERT INTO orderitems (orderid, productid, quantity, price)
                 VALUES (:oid, :pid, :qty, :price)
@@ -595,23 +600,25 @@ def checkout():
                 "price": item.price
             })
 
-        # Clear cart
+        # 4. Clear cart
         conn.execute(text("""
             DELETE FROM cartitem WHERE cartid = :cid
         """), {"cid": cartid})
 
+        # 5. Reset session cart
+        session.pop('cartid', None)
+
+        # 6. Final commit
         conn.commit()
 
-        return render_template("checkoutfinal.html", total=total, order_id=order_id)
-
+        # 7. Show success page
+        return render_template(
+            "checkoutfinal.html",
+            total=total,
+            order_id=order_id
+        )
+    
     return render_template('checkout.html', cart_items=cart_items, total=total)
-  
-@app.route('/warranty')
-def warranty():
-
-
-    return render_template('/warranty')
-
 
 if __name__ == '__main__':
     app.run(debug=True)

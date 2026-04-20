@@ -1,12 +1,31 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<h2>Order Placed Successfully!</h2>
 
-<p><strong>Order ID:</strong> {{ order_id }}</p>
-<p><strong>Total:</strong> ${{ "%.2f"|format(total) }}</p>
+<div class="success-container">
 
-<a href="/shop">
-    <button>Continue Shopping</button>
-</a>
+    <div class="success-card">
+
+        <div class="checkmark">✓</div>
+
+        <h2>Order Placed Successfully!</h2>
+
+        <p class="success-message">
+            Thank you for your purchase. Your order has been processed.
+        </p>
+
+        <div class="order-details">
+            <p><span>Order ID:</span> {{ order_id }}</p>
+            <p><span>Total Paid:</span> ${{ "%.2f"|format(total) }}</p>
+        </div>
+
+        <a href="/shop">
+            <button class="continue-btn">Continue Shopping</button>
+        </a>
+
+    </div>
+
+</div>
+
 {% endblock %}
+
