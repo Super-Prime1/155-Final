@@ -90,20 +90,33 @@ def signup():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
 
-    # User must be logged in
     if 'user_id' not in session:
         return redirect('/login')
 
-    # Fetch the user's info
-    user = conn.execute(text("""
-        SELECT * FROM users WHERE userid = :uid
-    """), {"uid": session['user_id']}).mappings().fetchone()
+    uid = session['user_id']
 
-    # If somehow no user is found (rare but safe)
+    # Fetch user info
+    user = conn.execute(
+        text("SELECT * FROM users WHERE userid = :uid"),
+        {"uid": uid}
+    ).mappings().fetchone()
+
     if not user:
         return redirect('/logout')
 
-    return render_template('account.html', user=user)
+    # Fetch user's orders (JOIN cart → orders)
+    userorders = conn.execute(
+        text("""
+            SELECT o.orderid, o.total, o.date, o.orderstatus
+            FROM orders o
+            JOIN cart c ON o.cartid = c.cartid
+            WHERE c.userid = :uid
+            ORDER BY o.date DESC
+        """),
+        {"uid": uid}
+    ).mappings().fetchall()
+
+    return render_template('account.html', user=user, orders=userorders)
 
 
 @app.route('/logout')
@@ -516,11 +529,13 @@ def deleteprod(pid):
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
 
+    # Must be logged in
     if 'user_id' not in session:
         return redirect('/login')
 
     cartid = session.get('cartid')
 
+    # No cart → go back
     if not cartid:
         return redirect('/cart')
 
@@ -533,18 +548,20 @@ def checkout():
         WHERE c.cartid = :cid
     """), {"cid": cartid}).mappings().fetchall()
 
+    # Empty cart check
     if not cart_items:
-        return "Cart is empty"
+        return redirect('/cart')
 
     # Calculate total
     total = sum(item.price * item.quantity for item in cart_items)
 
+    # PLACE ORDER
     if request.method == 'POST':
 
         from datetime import date
 
-        # Insert into orders
-        result = conn.execute(text("""
+        # 1. Create order
+        conn.execute(text("""
             INSERT INTO orders (date, total, orderstatus, cartid)
             VALUES (:date, :total, :status, :cartid)
         """), {
@@ -553,13 +570,26 @@ def checkout():
             "status": "pending",
             "cartid": cartid
         })
-        conn.commit()
 
-        # Get new order ID
-        order_id = result.lastrowid
+        # 2. Get new order ID safely
+        order_id = conn.execute(
+            text("SELECT LAST_INSERT_ID()")
+        ).scalar()
 
-        # Insert into orderitems
+        # 3. Insert order items + update stock
         for item in cart_items:
+
+            # reduce stock
+            conn.execute(text("""
+                UPDATE products
+                SET instock = instock - :qty
+                WHERE productid = :pid
+            """), {
+                "qty": item.quantity,
+                "pid": item.productid
+            })
+
+            # insert order item
             conn.execute(text("""
                 INSERT INTO orderitems (orderid, productid, quantity, price)
                 VALUES (:oid, :pid, :qty, :price)
@@ -570,23 +600,25 @@ def checkout():
                 "price": item.price
             })
 
-        # Clear cart
+        # 4. Clear cart
         conn.execute(text("""
             DELETE FROM cartitem WHERE cartid = :cid
         """), {"cid": cartid})
 
+        # 5. Reset session cart
+        session.pop('cartid', None)
+
+        # 6. Final commit
         conn.commit()
 
-        return render_template("checkoutfinal.html", total=total, order_id=order_id)
-
+        # 7. Show success page
+        return render_template(
+            "checkoutfinal.html",
+            total=total,
+            order_id=order_id
+        )
+    
     return render_template('checkout.html', cart_items=cart_items, total=total)
-  
-@app.route('/warranty')
-def warranty():
-
-
-    return render_template('/warranty')
-
 
 if __name__ == '__main__':
     app.run(debug=True)

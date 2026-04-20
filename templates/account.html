@@ -2,13 +2,40 @@
 
 {% block content %}
 
+<div class="account-container">
 
-<h2>My Account</h2>
+    <!-- Account Card -->
+    <div class="account-card">
+        <h2>My Account</h2>
 
-<p><strong>Name:</strong> {{ user.name }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<p><strong>Username:</strong> {{ user.username }}</p>
-<p><strong>Password:</strong> ********</p>
-<p><strong>Account Type:</strong> {{ user.role }}</p>
+        <div class="account-info">
+            <div><span>Name</span> {{ user.name }}</div>
+            <div><span>Email</span> {{ user.email }}</div>
+            <div><span>Username</span> {{ user.username }}</div>
+            <div><span>Password</span> ********</div>
+            <div><span>Account Type</span> {{ user.role }}</div>
+        </div>
+    </div>
+
+    <!-- Orders Card -->
+    <div class="orders-card">
+        <h2>My Orders</h2>
+
+        {% if orders %}
+            <div class="orders-grid">
+                {% for order in orders %}
+                    <div class="order-card">
+                        <p><strong>Order #{{ order.orderid }}</strong></p>
+                        <p class="price">${{ "%.2f"|format(order.total) }}</p>
+                        <p class="date">{{ order.date }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-orders">You have no orders yet.</p>
+        {% endif %}
+    </div>
+
+</div>
 
 {% endblock %}

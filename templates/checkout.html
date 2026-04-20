@@ -1,27 +1,48 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<h2>Checkout</h2>
 
-{% if cart_items %}
-    <ul>
-        {% for item in cart_items %}
-            <li>
-                {{ item.title }}  
-                (x{{ item.quantity }}) — 
-                ${{ "%.2f"|format(item.price * item.quantity) }}
-            </li>
-        {% endfor %}
-    </ul>
+<div class="checkout-container">
 
-    <h3>Total: ${{ "%.2f"|format(total) }}</h3>
+    <h2 class="checkout-title">Checkout</h2>
 
-    <form action="/checkout" method="POST">
-        <button type="submit">Place Order</button>
-    </form>
+    {% if cart_items %}
 
-{% else %}
-    <p>Your cart is empty.</p>
-{% endif %}
+    <div class="checkout-card">
+
+        <!-- Items -->
+        <div class="checkout-items">
+            {% for item in cart_items %}
+                <div class="checkout-item">
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-qty">Qty: {{ item.quantity }}</p>
+                    </div>
+
+                    <div class="item-price">
+                        ${{ "%.2f"|format(item.price * item.quantity) }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Total -->
+        <div class="checkout-total">
+            <h3>Total</h3>
+            <h3 class="total-price">${{ "%.2f"|format(total) }}</h3>
+        </div>
+
+        <!-- Button -->
+        <form action="/checkout" method="POST">
+            <button class="place-order-btn">Place Order</button>
+        </form>
+
+    </div>
+
+    {% else %}
+        <p class="empty-checkout">Your cart is empty.</p>
+    {% endif %}
+
+</div>
 
 {% endblock %}

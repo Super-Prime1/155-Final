@@ -2,56 +2,68 @@
 
 {% block content %}
 
-<h2>Your Cart</h2>
+<div class="cart-container">
 
-{% if cart_items %}
-    <table>
-        <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Qty</th>
-            <th>Subtotal</th>
-            <th>Action</th>
-        </tr>
+    <h2 class="cart-title">Your Cart</h2>
 
-        {% for item in cart_items %}
-        <tr>
-            <td>{{ item.title }}</td>
-            <td>${{ item.price }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>${{ item.price * item.quantity }}</td>
+    {% if cart_items %}
 
-            <td>
-                <form action="/cart" method="POST">
-                    <input type="hidden" name="cartitemid" value="{{ item.cartitemid }}">
-                    <input type="hidden" name="action" value="remove_one">
-                    <button type="submit">-</button>
-                </form>
+    <div class="cart-card">
 
-                <form action="/cart" method="POST">
-                    <input type="hidden" name="product_id" value="{{ item.productid }}">
-                    <input type="hidden" name="action" value="add_one">
-                    <button type="submit">+</button>
-                </form>
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-                <form action="/cart" method="POST">
-                    <input type="hidden" name="cartitemid" value="{{ item.cartitemid }}">
-                    <input type="hidden" name="action" value="remove_all">
-                    <button type="submit">Remove</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class="product-name">{{ item.title }}</td>
+                    <td>${{ item.price }}</td>
+                    <td class="qty">{{ item.quantity }}</td>
+                    <td class="subtotal">${{ item.price * item.quantity }}</td>
 
-    <h3>Total: ${{ cart_total }}</h3>
+                    <td class="actions">
 
-    <form action="/checkout" method="GET">
-        <button type="submit">Checkout</button>
-    </form>
+                        <form action="/cart" method="POST">
+                            <input type="hidden" name="product_id" value="{{ item.productid }}">
+                            <input type="hidden" name="action" value="add_one">
+                            <button class="qty-btn plus">+</button>
+                        </form>
 
-{% else %}
-    <p>Your cart is empty.</p>
-{% endif %}
+
+                        <form action="/cart" method="POST">
+                            <input type="hidden" name="cartitemid" value="{{ item.cartitemid }}">
+                            <input type="hidden" name="action" value="remove_one">
+                            <button class="qty-btn minus">−</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-footer">
+            <h3>Total: <span>${{ cart_total }}</span></h3>
+
+            <form action="/checkout" method="GET">
+                <button class="checkout-btn">Checkout</button>
+            </form>
+        </div>
+
+    </div>
+
+    {% else %}
+        <p class="empty-cart">Your cart is empty.</p>
+    {% endif %}
+
+</div>
 
 {% endblock %}
+
