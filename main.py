@@ -1,5 +1,5 @@
 from webbrowser import get
-
+from datetime import date
 from flask import Flask, render_template, request, redirect, session
 
 from sqlalchemy import create_engine, text
@@ -332,9 +332,27 @@ def admin():
     allproducts = conn.execute(text("SELECT * FROM products")).fetchall()
     allorders = conn.execute(text("SELECT * FROM orders")).fetchall()
     allreviews = conn.execute(text("SELECT * FROM review")).fetchall()
-    allreturns = conn.execute(text("SELECT * FROM returns")).fetchall()
     allwarranties = conn.execute(text("SELECT * FROM warranty")).fetchall()
     alldiscounts = conn.execute(text("SELECT * FROM discount")).fetchall()
+    pending_returns = conn.execute(text("""
+        SELECT * FROM returns
+        WHERE status IN ('pending', 'pending_warranty', 'pending_expired')
+        ORDER BY returnid DESC
+    """)).fetchall()
+
+    approved_returns = conn.execute(text("""
+        SELECT * FROM returns
+        WHERE status = 'approved'
+        ORDER BY returnid DESC
+    """)).fetchall()
+
+    denied_returns = conn.execute(text("""
+        SELECT * FROM returns
+        WHERE status = 'denied'
+        ORDER BY returnid DESC
+    """)).fetchall()
+
+
 
     return render_template(
         'admin.html',
@@ -343,9 +361,11 @@ def admin():
         allproducts=allproducts,
         allorders=allorders,
         allreviews=allreviews,
-        allreturns=allreturns,
         allwarranties=allwarranties,
-        alldiscounts=alldiscounts
+        alldiscounts=alldiscounts,
+        pending_returns=pending_returns,
+        approved_returns=approved_returns,
+        denied_returns=denied_returns
     )
 
 @app.route('/admin/edit/<table>/<int:item_id>', methods=['GET'])
@@ -619,6 +639,180 @@ def checkout():
         )
     
     return render_template('checkout.html', cart_items=cart_items, total=total)
+
+
+@app.route('/warranty', methods=['GET', 'POST'])
+def warranty():
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    result = None
+    status = None
+
+    if request.method == 'POST':
+
+        orderid = request.form['order_id']
+        uid = session['user_id']
+
+        result = conn.execute(text("""
+            SELECT 
+                p.title,
+                w.expire_date
+            FROM orders o
+            JOIN cart c ON o.cartid = c.cartid
+            JOIN orderitems oi ON o.orderid = oi.orderid
+            JOIN products p ON oi.productid = p.productid
+            LEFT JOIN warranty w ON p.warrantyid = w.warrantyid
+            WHERE o.orderid = :oid
+            AND c.userid = :uid
+            LIMIT 1
+        """), {
+            "oid": orderid,
+            "uid": uid
+        }).mappings().fetchone()
+
+        if result and result['expire_date']:
+            if result['expire_date'] >= date.today():
+                status = "active"
+            else:
+                status = "expired"
+        else:
+            status = "none"
+
+    return render_template(
+        "warranty.html",
+        result=result,
+        status=status,
+        current_date=date.today()
+    )
+
+
+
+
+
+@app.route('/return', methods=['GET', 'POST'])
+def returns():
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    if request.method == 'POST':
+
+        complaint = request.form['complaint']
+        title = request.form['title']
+        type_ = request.form['type']
+        orderid = request.form['order_id']
+
+        order_check = conn.execute(text("""
+            SELECT o.orderid
+            FROM orders o
+            JOIN cart c ON o.cartid = c.cartid
+            WHERE o.orderid = :oid
+            AND c.userid = :uid
+        """), {"oid": orderid, "uid": uid}).fetchone()
+
+        if not order_check:
+            return "Invalid order"
+
+        warranty = conn.execute(text("""
+            SELECT w.warrantyid, w.expire_date
+            FROM orderitems oi
+            JOIN products p ON oi.productid = p.productid
+            LEFT JOIN warranty w ON p.warrantyid = w.warrantyid
+            WHERE oi.orderid = :oid
+            LIMIT 1
+        """), {"oid": orderid}).mappings().fetchone()
+
+        status = "pending"
+
+        if warranty and warranty['expire_date']:
+            if warranty['expire_date'] >= date.today():
+                status = "pending_warranty"
+            else:
+                status = "pending_expired"
+
+        conn.execute(text("""
+            INSERT INTO returns (orderid, title, complaint, type, status, warrantyid)
+            VALUES (:oid, :title, :complaint, :type, :status, :wid)
+        """), {
+            "oid": orderid,
+            "title": title,
+            "complaint": complaint,
+            "type": type_,
+            "status": status,
+            "wid": warranty['warrantyid'] if warranty else None
+        })
+
+        conn.commit()
+
+        return redirect('/return')
+
+    user_returns = conn.execute(text("""
+        SELECT returnid, title, complaint, type, status
+        FROM returns
+        WHERE orderid IN (
+            SELECT o.orderid
+            FROM orders o
+            JOIN cart c ON o.cartid = c.cartid
+            WHERE c.userid = :uid
+        )
+        ORDER BY returnid DESC
+    """), {"uid": uid}).fetchall()
+
+    return render_template("return.html", user_returns=user_returns)
+
+
+@app.route('/return/approve/<int:rid>')
+def approve_return(rid):
+
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        UPDATE returns
+        SET status = 'approved'
+        WHERE returnid = :id
+    """), {"id": rid})
+
+    conn.commit()
+    return redirect('/admin')
+
+@app.route('/return/deny/<int:rid>')
+def deny_return(rid):
+
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        UPDATE returns
+        SET status = 'denied'
+        WHERE returnid = :id
+    """), {"id": rid})
+
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/return/<int:return_id>')
+def delete_return(return_id):
+
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        DELETE FROM returns
+        WHERE returnid = :id
+    """), {"id": return_id})
+
+    conn.commit()
+
+    return redirect('/admin')
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
