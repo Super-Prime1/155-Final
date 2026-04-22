@@ -76,12 +76,43 @@
 
 {% if filter_section == 'all' or filter_section == 'returns' %}
 <h3>All Returns</h3>
+<h4>Pending Returns</h4>
 <ul class="admin-list">
-    {% for returns in allreturns %}
+    {% for r in pending_returns %}
     <li>
-        Return ID: {{ returns.returnid }} - Title: {{ returns.title }}
-        <a href="/admin/edit/return/{{ returns.returnid }}">Edit</a>
-        <a href="/admin/delete/return/{{ returns.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
+        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+        
+        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+        <a href="/return/approve/{{ r.returnid }}">Approve</a>
+        <a href="/return/deny/{{ r.returnid }}">Deny</a>
+        <a href="/admin/delete/return/{{ r.returnid }}" 
+           onclick="return confirm('Delete return?')">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<h4>Approved Returns</h4>
+<ul class="admin-list">
+    {% for r in approved_returns %}
+    <li>
+        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+
+        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+        <a href="/admin/delete/return/{{ r.returnid }}" 
+           onclick="return confirm('Delete return?')">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<h4>Denied Returns</h4>
+<ul class="admin-list">
+    {% for r in denied_returns %}
+    <li>
+        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+
+        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+        <a href="/admin/delete/return/{{ r.returnid }}" 
+           onclick="return confirm('Delete return?')">Delete</a>
     </li>
     {% endfor %}
 </ul>
@@ -114,4 +145,6 @@
 {% endif %}
 
 </div>
+
+
 {% endblock %}

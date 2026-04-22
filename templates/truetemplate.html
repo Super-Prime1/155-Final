@@ -29,6 +29,7 @@
             {% if session.get('user_id') and session.get('role') == 'vendor' %}
                 <li><a href="/vendor">Vendor Dashboard</a></li>
             {% endif %}
+            <li><a href="/return">returns</a></li>
             <li><a href="/logout">Logout</a></li>
         {% else %}
             <!-- User is NOT logged in -->
@@ -60,9 +61,10 @@
     <div class="footer-links">
         <ul>
             <li><a href="/about">About Us</a></li>
-            <li><a href="/returns">Returns</a></li>
+            <li><a href="/return">Returns</a></li>
             <li><a href="/support">Customer Support</a></li>
             <li><a href="/reviews">review</a></li>
+            <li><a href="/warranty">warranty</a></li>
         </ul>
     </div>
 

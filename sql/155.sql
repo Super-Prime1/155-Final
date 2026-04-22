@@ -548,5 +548,28 @@ ADD name VARCHAR(255);
 
 alter table review add column created_at  DATETIME DEFAULT CURRENT_TIMESTAMP;
 
+-- comaplaint table
+create table complaint(
+complaintid int auto_increment primary key ,
+complaint_date datetime default current_timestamp,
+description varchar(255),
+productid INT NOT null,
+userid INT NOT NULL,
+demand enum('return','refund','warraty claim'),
+status enum('pending','rejected','confrimed'),
+FOREIGN KEY (userid) REFERENCES users(userid),
+FOREIGN KEY (productid) REFERENCES products(productid)
+);
 
+ALTER TABLE complaint
+ADD COLUMN warrantyid INT;
+
+ALTER TABLE complaint
+ADD CONSTRAINT fk_warranty
+FOREIGN KEY (warrantyid) REFERENCES warranty(warrantyid);
+
+ALTER TABLE returns
+MODIFY date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE returns MODIFY status VARCHAR(50);
 
