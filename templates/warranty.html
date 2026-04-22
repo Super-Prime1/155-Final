@@ -2,12 +2,36 @@
 
 {% block content %}
 
-<div class="warantys">
-    <label>complaint date</label>
-    <input type="date" name="complaint_date">
-    
+<h2>Check Warranty</h2>
 
+<form method="POST">
+    <label>Order ID</label>
+    <input type="number" name="order_id" required>
+    <button type="submit">Check</button>
+</form>
 
-</div>
+{% if result %}
+
+    <h3>Result</h3>
+
+    <p><strong>Product:</strong> {{ result.title }}</p>
+
+    {% if status == "active" %}
+        <p style="color:green;">
+             Warranty is ACTIVE until {{ result.expiration_date }}
+        </p>
+
+    {% elif status == "expired" %}
+        <p style="color:red;">
+             Warranty EXPIRED on {{ result.expiration_date }}
+        </p>
+
+    {% else %}
+        <p style="color:gray;">
+             No warranty found for this product
+        </p>
+    {% endif %}
+
+{% endif %}
 
 {% endblock %}

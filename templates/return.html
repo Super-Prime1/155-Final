@@ -1,0 +1,89 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+
+
+<div class="complaint_card">
+
+    <form method="POST">
+
+        <label>Complaint</label>
+        <input type="text" name="complaint" required>
+
+        <label>Item Name</label>
+        <input type="text" name="title" required>
+
+        <label>Type</label>
+        <select name="type" id="typeSelect" required>
+            <option value="refund">refund</option>
+            <option value="return">return</option>
+            <option value="warranty">warranty</option>
+        </select>
+
+        <label>Order ID</label>
+        <input type="number" name="order_id" required>
+
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+</div>
+
+
+<h2>My Returns</h2>
+
+<div class="returns-container">
+
+    {% if user_returns %}
+
+        {% for r in user_returns %}
+        <div class="return-card">
+
+            <div class="return-header">
+                <h3>{{ r.title }}</h3>
+                <span class="return-status {{ r.status }}">
+                    {{ r.status }}
+                </span>
+            </div>
+
+            <div class="return-body">
+
+                <div class="return-item">
+                    <label>Complaint</label>
+                    <p>{{ r.complaint }}</p>
+                </div>
+
+                <div class="return-item">
+                    <label>Type</label>
+                    <p>{{ r.type }}</p>
+                </div>
+
+                <div class="return-item">
+                    <label>Return ID</label>
+                    <p>{{ r.returnid }}</p>
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        <div class="no-item">
+            <p>You have no returns yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+
+
+
+
+
+{% endblock %}
