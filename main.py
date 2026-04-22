@@ -130,7 +130,7 @@ def shop():
 
     # 1. User must be logged in
     if 'user_id' not in session:
-        return redirect('/')
+        return redirect('/signup')
 
     # 2. Create a cart if the user doesn't have one yet
     if 'cartid' not in session:

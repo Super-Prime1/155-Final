@@ -1,19 +1,37 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<h2>Vendor Dashboard</h2>
-<p>Welcome, Vendor!</p>
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h2 class="dashboard-title">Vendor Dashboard</h2>
+        <p class="dashboard-welcome">Welcome, Vendor!</p>
+        <a href="/addprod" class="btn btn-primary">Add Product</a>
+    </header>
 
-<a href="/addprod" class="btn">Add Product</a>
+    <section class="products-section">
+        <h3 class="section-title">My Products</h3>
 
-<h3>My Products</h3>
-<ul>
-    {% for product in products %}
-        <li>
-            {{ product.title }} - ${{ "%.2f"|format(product.price) }}
-            <a href="/editprod/{{ product.productid }}">Edit</a>
-            <a href="/deleteprod/{{ product.productid }}" style="color:red;">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+        <ul class="product-list">
+            {% for product in products %}
+                <li class="product-cardv">
+                    <div class="product-info">
+                        <span class="product-title">{{ product.title }}</span>
+                        <span class="product-price">
+                            ${{ "%.2f"|format(product.price) }}
+                        </span>
+                    </div>
+
+                    <div class="product-actions">
+                        <a href="/editprod/{{ product.productid }}" class="btn btn-edit">
+                            Edit
+                        </a>
+                        <a href="/deleteprod/{{ product.productid }}" class="btn btn-delete">
+                            Delete
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
 {% endblock %}
