@@ -1,37 +1,59 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<h2>Edit Product</h2>
+<div class="form-container">
+    <h2 class="form-title">Edit Product</h2>
 
-<form action="/editprod/{{ product.productid }}" method="POST">
+    <form action="/editprod/{{ product.productid }}" method="POST" class="product-form">
 
-    <label>Title:</label>
-    <input type="text" name="title" value="{{ product.title }}" required><br>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input id="title" type="text" name="title" value="{{ product.title }}" required>
+        </div>
 
-    <label>Description:</label>
-    <textarea name="description" required>{{ product.description }}</textarea><br>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required>{{ product.description }}</textarea>
+        </div>
 
-    <label>Price:</label>
-    <input type="number" step="0.01" name="price" value="{{ product.price }}" required><br>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input id="price" type="number" step="0.01" name="price" value="{{ product.price }}" required>
+            </div>
 
-    <label>Stock:</label>
-    <input type="number" name="instock" value="{{ product.instock }}" required><br>
+            <div class="form-group">
+                <label for="instock">Stock</label>
+                <input id="instock" type="number" name="instock" value="{{ product.instock }}" required>
+            </div>
+        </div>
 
-    <label>Size:</label>
-    <select name="size">
-        <option value="extra small" {% if product.size == 'extra small' %}selected{% endif %}>Extra Small</option>
-        <option value="small" {% if product.size == 'small' %}selected{% endif %}>Small</option>
-        <option value="medium" {% if product.size == 'medium' %}selected{% endif %}>Medium</option>
-        <option value="large" {% if product.size == 'large' %}selected{% endif %}>Large</option>
-        <option value="extra large" {% if product.size == 'extra large' %}selected{% endif %}>Extra Large</option>
-    </select><br>
+        <div class="form-group">
+            <label for="size">Size</label>
+            <select id="size" name="size">
+                <option value="extra small" {% if product.size == 'extra small' %}selected{% endif %}>Extra Small</option>
+                <option value="small" {% if product.size == 'small' %}selected{% endif %}>Small</option>
+                <option value="medium" {% if product.size == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="large" {% if product.size == 'large' %}selected{% endif %}>Large</option>
+                <option value="extra large" {% if product.size == 'extra large' %}selected{% endif %}>Extra Large</option>
+            </select>
+        </div>
 
-    <label>Warranty ID:</label>
-    <input type="number" name="warrantyid" value="{{ product.warrantyid }}"><br>
+        <div class="form-group">
+            <label for="warrantyid">Warranty ID</label>
+            <input id="warrantyid" type="number" name="warrantyid" value="{{ product.warrantyid }}">
+        </div>
 
-    <label>Image URL:</label>
-    <input type="text" name="image" value="{{ product.image }}"><br>
+        <div class="form-group">
+            <label for="image">Image URL</label>
+            <input id="image" type="text" name="image" value="{{ product.image }}">
+        </div>
 
-    <button type="submit">Save Changes</button>
-</form>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>
 {% endblock %}
