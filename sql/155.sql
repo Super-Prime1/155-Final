@@ -573,3 +573,36 @@ MODIFY date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE returns MODIFY status VARCHAR(50);
 
+
+-- color update
+ALTER TABLE products
+ADD COLUMN colorid INT,
+ADD CONSTRAINT fk_products_color
+    FOREIGN KEY (colorid) REFERENCES color(colorid);
+
+ALTER TABLE color
+DROP FOREIGN KEY color_ibfk_1,
+DROP COLUMN productid;
+
+
+-- size and products update 
+
+CREATE TABLE size (
+    sizeid INT AUTO_INCREMENT PRIMARY KEY,
+    sizename VARCHAR(50) NOT NULL
+);
+
+INSERT INTO size (sizename) VALUES
+('extra small'),
+('small'),
+('medium'),
+('large'),
+('extra large');
+
+ALTER TABLE products
+ADD COLUMN sizeid INT,
+ADD CONSTRAINT fk_products_size
+FOREIGN KEY (sizeid) REFERENCES size(sizeid);
+
+ALTER TABLE products DROP COLUMN size;
+

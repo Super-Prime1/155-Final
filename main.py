@@ -132,60 +132,96 @@ def shop():
     if 'user_id' not in session:
         return redirect('/signup')
 
-    # 2. Create a cart if the user doesn't have one yet
+    # 2. Ensure cart exists
     if 'cartid' not in session:
         result = conn.execute(text("""
             INSERT INTO cart (userid)
             VALUES (:uid)
         """), {"uid": session['user_id']})
         conn.commit()
+
         session['cartid'] = result.lastrowid
 
-    # 3. Now it's safe to read cartid
     cartid = session['cartid']
 
+    # 3. Handle POST actions
     if request.method == 'POST':
-        product_id = request.form['product_id']
-        action = request.form['action']
+        product_id = request.form.get('product_id')
+        action = request.form.get('action')
+
+        # (optional inputs from form)
+        size = request.form.get('size')
+        colorid = request.form.get('colorid')
+
+        if not product_id:
+            return redirect('/shop')
 
         if action == 'add':
+
+            # NOTE: size/color are NOT stored yet in DB,
+            # so they are currently ignored for cart logic
+
             existing = conn.execute(text("""
                 SELECT quantity FROM cartitem
                 WHERE cartid = :cartid AND productid = :pid
-            """), {"cartid": cartid, "pid": product_id}).fetchone()
+            """), {
+                "cartid": cartid,
+                "pid": product_id
+            }).fetchone()
 
             if existing:
                 conn.execute(text("""
                     UPDATE cartitem
                     SET quantity = quantity + 1
                     WHERE cartid = :cartid AND productid = :pid
-                """), {"cartid": cartid, "pid": product_id})
+                """), {
+                    "cartid": cartid,
+                    "pid": product_id
+                })
             else:
                 conn.execute(text("""
                     INSERT INTO cartitem (cartid, productid, quantity)
                     VALUES (:cartid, :pid, 1)
-                """), {"cartid": cartid, "pid": product_id})
-
-            conn.commit()
+                """), {
+                    "cartid": cartid,
+                    "pid": product_id
+                })
 
         elif action == 'remove':
             conn.execute(text("""
                 UPDATE cartitem
                 SET quantity = quantity - 1
                 WHERE cartid = :cartid AND productid = :pid
-            """), {"cartid": cartid, "pid": product_id})
+            """), {
+                "cartid": cartid,
+                "pid": product_id
+            })
 
             conn.execute(text("""
                 DELETE FROM cartitem
-                WHERE cartid = :cartid AND productid = :pid AND quantity <= 0
-            """), {"cartid": cartid, "pid": product_id})
+                WHERE cartid = :cartid
+                AND productid = :pid
+                AND quantity <= 0
+            """), {
+                "cartid": cartid,
+                "pid": product_id
+            })
 
-            conn.commit()
-
+        conn.commit()
         return redirect('/shop')
 
-    products = conn.execute(text("SELECT * FROM products")).fetchall()
-    return render_template('shop.html', products=products)
+    # 4. GET request → load products
+    products = conn.execute(text("""
+        SELECT p.*, c.colorname
+        FROM products p
+        LEFT JOIN color c ON p.colorid = c.colorid
+    """)).fetchall()
+
+    colors = conn.execute(text("""
+        SELECT colorid, colorname FROM color
+    """)).fetchall()
+
+    return render_template('shop.html', products=products, colors=colors)
 
 
 
@@ -453,10 +489,15 @@ def editprod(pid):
         WHERE productid = :pid AND vendorid = :vid
     """), {"pid": pid, "vid": session['user_id']}).mappings().fetchone()
 
+    colors = conn.execute(text("""
+        SELECT colorid, colorname FROM color
+    """)).fetchall()
+
     if not product:
         return "Product not found or not yours", 404
 
-    return render_template('editprod.html', product=product)
+    return render_template('editprod.html', product=product, colors=colors)
+
 
 @app.route('/editprod/<int:pid>', methods=['POST'])
 def updateprod(pid):
@@ -472,7 +513,8 @@ def updateprod(pid):
             instock = :instock,
             size = :size,
             warrantyid = :warrantyid,
-            image = :image
+            image = :image,
+            colorid = :colorid
         WHERE productid = :pid AND vendorid = :vid
     """), {
         "title": request.form['title'],
@@ -482,6 +524,7 @@ def updateprod(pid):
         "size": request.form['size'],
         "warrantyid": request.form['warrantyid'],
         "image": request.form['image'],
+        "colorid": request.form['colorid'],  # 👈 ADD THIS
         "pid": pid,
         "vid": session['user_id']
     })
@@ -496,7 +539,8 @@ def addprod():
     if 'role' not in session or session['role'] != 'vendor':
         return redirect('/')
 
-    return render_template('addprod.html')
+    return render_template("addprod.html")
+
 
 @app.route('/addprod', methods=['POST'])
 def saveprod():
@@ -505,8 +549,9 @@ def saveprod():
         return redirect('/')
 
     conn.execute(text("""
-        INSERT INTO products (title, description, price, instock, size, warrantyid, image, vendorid)
-        VALUES (:title, :description, :price, :instock, :size, :warrantyid, :image, :vendorid)
+        INSERT INTO products 
+        (title, description, price, instock, size, warrantyid, image, vendorid, colorid)
+        VALUES (:title, :description, :price, :instock, :size, :warrantyid, :image, :vendorid, :colorid)
     """), {
         "title": request.form['title'],
         "description": request.form['description'],
@@ -515,7 +560,8 @@ def saveprod():
         "size": request.form['size'],
         "warrantyid": request.form['warrantyid'],
         "image": request.form['image'],
-        "vendorid": session['user_id']
+        "vendorid": session['user_id'],
+        "colorid": request.form['colorid']
     })
 
     conn.commit()
@@ -532,7 +578,6 @@ def deleteprod(pid):
     conn.execute(text("DELETE FROM cartitem WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM orderitems WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM discount_products WHERE productid = :pid"), {"pid": pid})
-    conn.execute(text("DELETE FROM color WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM review WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM wishlist WHERE productid = :pid"), {"pid": pid})
 
