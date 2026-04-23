@@ -208,22 +208,13 @@ def shop():
         return redirect('/shop')
 
     # 4. GET request → load products
-    q = request.args.get('q')
-
-    if q:
-        products = conn.execute(text("""
-            SELECT p.*, c.colorname
-            FROM products p
-            LEFT JOIN color c ON p.colorid = c.colorid
-            WHERE p.title LIKE :q
-            OR p.description LIKE :q
-        """), {"q": f"%{q}%"}).fetchall()
-    else:
-        products = conn.execute(text("""
-            SELECT p.*, c.colorname
-            FROM products p
-            LEFT JOIN color c ON p.colorid = c.colorid
-        """)).fetchall()
+    products = conn.execute(text("""
+        SELECT p.*, c.colorname,d.discountprice,d.length
+        FROM products p
+        LEFT JOIN color c ON p.colorid = c.colorid
+        LEFT JOIN discount d ON p.productid = d.productid
+        AND CURRENT_DATE <= d.length
+    """)).fetchall()
 
     colors = conn.execute(text("""
         SELECT colorid, colorname FROM color
