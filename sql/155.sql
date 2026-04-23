@@ -612,3 +612,15 @@ ALTER TABLE returns
 ADD COLUMN status ENUM('pending','approved','rejected','completed') DEFAULT 'pending';
 
 
+INSERT INTO color (colorid, colorname)
+VALUES (3, 'Green');
+INSERT INTO color (colorid, colorname)
+VALUES (1, 'red');
+INSERT INTO color (colorid, colorname)
+VALUES (2, 'blue');
+INSERT INTO color (colorid, colorname)
+VALUES (4, 'black');
+INSERT INTO color (colorid, colorname)
+VALUES (5, 'white');
+
+

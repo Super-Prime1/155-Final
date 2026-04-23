@@ -12,8 +12,15 @@
     <div class="product-card">
 
         <h2 class="product-title">{{ p.title }}</h2>
-
+        {% if p.discountprice%}
+        <del>${{ p.price }}</del>
+        <strong> sale: ${{p.discountprice }}</strong>
+        <p class="discount-end">
+            Ends on: {{ p.length }}
+        </p>
+        {% else %}
         <p class="product-price">${{ p.price }}</p>
+        {% endif %}
         <p class="product-desc">{{ p.description }}</p>
 
         <p class="product-meta">
