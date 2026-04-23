@@ -6,6 +6,11 @@
 
 {% block content %}
 
+    <form action="/shop" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
 <div class="shop-container">
 
     {% for p in products %}

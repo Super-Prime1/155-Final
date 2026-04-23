@@ -32,6 +32,27 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <h3 class="section-title">Orders for My Products</h3>
+        <ul class="order-list">
+            {% for order in orders %}
+                <li class="order-cardv">
+                    <div class="order-info">
+                        <span class="order-id">Order #{{ order.orderid }}</span>
+                        <span class="order-total">
+                            Total: ${{ "%.2f"|format(order.total) }}
+                        </span>
+                        <span class="order-date">Date: {{ order.date }}</span>
+                        <span class="order-status">Status: {{ order.orderstatus }}</span>
+                    </div>
+                    <div class="order-actions">
+                        <a href="/admin/edit/order/{{ order.orderid }}" class="btn btn-edit">
+                            View Details
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
     </section>
 </div>
 {% endblock %}
