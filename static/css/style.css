@@ -1044,3 +1044,155 @@ textarea{
 .btn-secondary:hover{
     background: #bbb;
 }
+
+
+.search-form{
+    display: flex;
+    gap: 10px;
+    margin: 20px;
+}
+
+.search-form input{
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 250px;
+}
+
+.search-form button{
+    padding: 10px 15px;
+    border: none;
+    background: #054997;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.search-form button:hover{
+    background: #022249;
+}
+
+/* ===== DASHBOARD LAYOUT ===== */
+.dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #222;
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.dashboard-title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.dashboard-welcome {
+    color: #666;
+    margin-left: 10px;
+}
+
+/* Button */
+.btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #4a90e2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #357bd8;
+}
+
+/* ===== SECTIONS ===== */
+.section-title {
+    font-size: 20px;
+    margin: 25px 0 15px;
+    border-left: 4px solid #4a90e2;
+    padding-left: 10px;
+}
+
+/* ===== PRODUCT LIST ===== */
+.product-list,
+.order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Product Card */
+.product-cardv,
+.order-cardv {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Product Info */
+.product-info,
+.order-info{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-title{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.product-price{
+    color: #4a90e2;
+    font-weight: bold;
+}
+
+/* Order text */
+.order-id{
+    font-weight: bold;
+}
+
+.order-total{
+    color: #4a90e2;
+}
+
+.order-date{
+    font-size: 13px;
+    color: #777;
+}
+
+.order-status{
+    font-size: 13px;
+    color: #333;
+    font-weight: bold;
+}
+
+.product-actions,
+.order-actions{
+    display: flex;
+    gap: 10px;
+}
+

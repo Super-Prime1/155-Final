@@ -158,9 +158,6 @@ def shop():
 
         if action == 'add':
 
-            # NOTE: size/color are NOT stored yet in DB,
-            # so they are currently ignored for cart logic
-
             existing = conn.execute(text("""
                 SELECT quantity FROM cartitem
                 WHERE cartid = :cartid AND productid = :pid
@@ -211,11 +208,22 @@ def shop():
         return redirect('/shop')
 
     # 4. GET request → load products
-    products = conn.execute(text("""
-        SELECT p.*, c.colorname
-        FROM products p
-        LEFT JOIN color c ON p.colorid = c.colorid
-    """)).fetchall()
+    q = request.args.get('q')
+
+    if q:
+        products = conn.execute(text("""
+            SELECT p.*, c.colorname
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+            WHERE p.title LIKE :q
+            OR p.description LIKE :q
+        """), {"q": f"%{q}%"}).fetchall()
+    else:
+        products = conn.execute(text("""
+            SELECT p.*, c.colorname
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+        """)).fetchall()
 
     colors = conn.execute(text("""
         SELECT colorid, colorname FROM color
@@ -406,8 +414,7 @@ def admin():
 
 @app.route('/admin/edit/<table>/<int:item_id>', methods=['GET'])
 def admin_edit(table, item_id):
-    if 'role' not in session or session['role'] != 'admin':
-        return redirect('/')
+
 
     table_map = {
         "user": ("users", "userid"),
@@ -433,8 +440,6 @@ def admin_edit(table, item_id):
 
 @app.route('/admin/edit/<table>/<int:item_id>', methods=['POST'])
 def admin_edit_post(table, item_id):
-    if 'role' not in session or session['role'] != 'admin':
-        return redirect('/')
 
     data = dict(request.form)
 
@@ -458,24 +463,42 @@ def admin_edit_post(table, item_id):
         data
     )
     conn.commit()
+    if session.get('role') == 'vendor':
+        return redirect('/vendor')
 
-    return redirect('/admin')
+    elif session.get('role') == 'admin':
+        return redirect('/admin')
+
+    else:
+        return redirect('/')
+
 
 
 @app.route('/vendor', methods=['GET', 'POST'])
 def vendor():
 
-    # Only vendors can access this page
     if 'role' not in session or session['role'] != 'vendor':
         return redirect('/')
 
-    # Fetch all products owned by this vendor
     products = conn.execute(text("""
         SELECT * FROM products
         WHERE vendorid = :vid
     """), {"vid": session['user_id']}).mappings().fetchall()
 
-    return render_template('vendor.html', products=products)
+    orders = conn.execute(text("""
+        SELECT DISTINCT
+            o.orderid,
+            o.total,
+            o.date,
+            o.orderstatus
+        FROM orders o
+        JOIN orderitems oi ON o.orderid = oi.orderid
+        JOIN products p ON oi.productid = p.productid
+        WHERE p.vendorid = :vid
+        ORDER BY o.date DESC
+    """), {"vid": session['user_id']}).mappings().fetchall()
+
+    return render_template('vendor.html', products=products, orders=orders)
 
 
 @app.route('/editprod/<int:pid>', methods=['GET'])
