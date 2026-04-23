@@ -833,5 +833,37 @@ def delete_return(return_id):
     return redirect('/admin')
 
 
+
+
+@app.route('/discount',methods=['get','post'])
+def create_discount():
+    if 'role' not in session or session['role'] not in ['admin', 'vendor']: 
+     return redirect('/')
+
+    if request.method =='POST':
+
+        end_date = request.form['end_date']
+        disc_price = request.form['disc_price']
+        og_price = request.form['og_price']
+        product_id = request.form['product_id']
+
+        conn.execute(text("""
+        insert into discount (length,discountprice,price,productid)
+        values (:end_date,:disc_price,:og_price,:product_id)
+        """),{
+            "end_date": end_date,
+            "disc_price": disc_price,
+            "og_price": og_price,
+            "product_id": product_id
+        }
+        )
+
+        conn.commit()
+        return redirect('/discount')
+    return render_template('discount.html')
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

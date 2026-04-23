@@ -1,0 +1,30 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+<form action="" method="post">
+
+<h2>discount create</h2>
+
+<label> length of discount</label>
+<input type="date" name="end_date">
+
+<label> discount price </label>
+<input type="text" name="disc_price" >
+
+<label>original price</label>
+<input type="number" name="og_price">
+
+<label>product_id</label>
+<input type="number" name="product_id">
+
+<button type="submit">Create Discount</button>
+</form>
+
+
+
+
+{% endblock %}
+
+
+
