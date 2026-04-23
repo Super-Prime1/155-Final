@@ -23,21 +23,42 @@
             <span>Vendor ID: {{ p.vendorid }}</span>
         </p>
 
-        <div class="product-buttons">
+        <!-- SINGLE FORM -->
+        <form action="/shop" method="POST">
 
-            <form action="/shop" method="POST">
-                <input type="hidden" name="product_id" value="{{ p.productid }}">
-                <input type="hidden" name="action" value="add">
+            <input type="hidden" name="product_id" value="{{ p.productid }}">
+            <input type="hidden" name="action" value="add">
+
+            <!-- SIZE -->
+            <select name="size">
+                <option value="extra small">Extra Small</option>
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+                <option value="extra large">Extra Large</option>
+            </select>
+
+            <!-- COLOR -->
+            <select name="colorid">
+                {% for c in colors %}
+                    <option value="{{ c.colorid }}">
+                        {{ c.colorname }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <div class="product-buttons">
                 <button type="submit" class="btn add-btn">Add to Cart</button>
-            </form>
+            </div>
 
-            <form action="/shop" method="POST">
-                <input type="hidden" name="product_id" value="{{ p.productid }}">
-                <input type="hidden" name="action" value="remove">
-                <button type="submit" class="btn remove-btn">Remove</button>
-            </form>
+        </form>
 
-        </div>
+        <!-- REMOVE FORM  -->
+        <form action="/shop" method="POST">
+            <input type="hidden" name="product_id" value="{{ p.productid }}">
+            <input type="hidden" name="action" value="remove">
+            <button type="submit" class="btn remove-btn">Remove</button>
+        </form>
 
     </div>
     {% endfor %}

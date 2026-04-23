@@ -28,6 +28,17 @@
             </div>
         </div>
 
+
+        <div class="form-group">
+            <label for="colorid">Color</label>
+            <select id="colorid" name="colorid" required>
+                {% for color in colors %}
+                    <option value="{{ color.colorid }}">{{ color.colorname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
         <div class="form-group">
             <label for="size">Size</label>
             <select id="size" name="size">
@@ -48,6 +59,8 @@
             <label for="image">Image URL</label>
             <input id="image" type="text" name="image">
         </div>
+
+
 
         <button type="submit" class="btn btn-primary">Add Product</button>
     </form>
