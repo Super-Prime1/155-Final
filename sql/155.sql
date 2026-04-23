@@ -574,6 +574,7 @@ MODIFY date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE returns MODIFY status VARCHAR(50);
 
 
+
 -- color update
 ALTER TABLE products
 ADD COLUMN colorid INT,
@@ -605,4 +606,9 @@ ADD CONSTRAINT fk_products_size
 FOREIGN KEY (sizeid) REFERENCES size(sizeid);
 
 ALTER TABLE products DROP COLUMN size;
+
+
+ALTER TABLE returns
+ADD COLUMN status ENUM('pending','approved','rejected','completed') DEFAULT 'pending';
+
 
