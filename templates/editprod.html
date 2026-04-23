@@ -27,6 +27,18 @@
                 <input id="instock" type="number" name="instock" value="{{ product.instock }}" required>
             </div>
         </div>
+        
+        <div class="form-group">
+            <label for="color">Color</label>
+            <select id="color" name="colorid">
+                {% for c in colors %}
+                    <option value="{{ c.colorid }}"
+                        {% if c.colorid == product.colorid %}selected{% endif %}>
+                        {{ c.colorname }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
 
         <div class="form-group">
             <label for="size">Size</label>
