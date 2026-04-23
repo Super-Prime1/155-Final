@@ -1,5 +1,5 @@
 from webbrowser import get
-from datetime import date
+from datetime import date,datetime
 from flask import Flask, render_template, request, redirect, session
 
 from sqlalchemy import create_engine, text
@@ -651,41 +651,62 @@ def warranty():
     status = None
 
     if request.method == 'POST':
+        action = request.form.get('action')
 
-        orderid = request.form['order_id']
-        uid = session['user_id']
+        if action == "create":
+                if 'role' not in session or session['role'] != 'admin':
+                    return redirect('/')
+     
+                expire_date = datetime.strptime(
+                request.form['expire_box'],
+                "%m/%d/%Y"
+                 ).date()
+        
+                conn.execute(text("""
+                insert into warranty (expire_date) values (:expire_date)
+                """),
+                {'expire_date': expire_date}
+                )
 
-        result = conn.execute(text("""
+                conn.commit()
+                return redirect('/warranty')
+    
+        elif action == "check":
+
+            orderid = request.form['order_id']
+            uid = session['user_id']
+
+            result = conn.execute(text("""
             SELECT 
                 p.title,
                 w.expire_date
-            FROM orders o
-            JOIN cart c ON o.cartid = c.cartid
-            JOIN orderitems oi ON o.orderid = oi.orderid
-            JOIN products p ON oi.productid = p.productid
-            LEFT JOIN warranty w ON p.warrantyid = w.warrantyid
-            WHERE o.orderid = :oid
-            AND c.userid = :uid
-            LIMIT 1
-        """), {
-            "oid": orderid,
-            "uid": uid
-        }).mappings().fetchone()
+                FROM orders o
+                JOIN cart c ON o.cartid = c.cartid
+                JOIN orderitems oi ON o.orderid = oi.orderid
+                JOIN products p ON oi.productid = p.productid
+                LEFT JOIN warranty w ON p.warrantyid = w.warrantyid
+                WHERE o.orderid = :oid
+                AND c.userid = :uid
+                LIMIT 1
+            """), {
+                "oid": orderid,
+                "uid": uid
+            }).mappings().fetchone()
 
-        if result and result['expire_date']:
-            if result['expire_date'] >= date.today():
-                status = "active"
+            if result and result['expire_date']:
+                if result['expire_date'] >= date.today():
+                    status = "active"
+                else:
+                    status = "expired"
             else:
-                status = "expired"
-        else:
-            status = "none"
+                status = "none"
 
     return render_template(
-        "warranty.html",
-        result=result,
-        status=status,
-        current_date=date.today()
-    )
+            "warranty.html",
+            result=result,
+            status=status,
+            current_date=date.today()
+        )
 
 
 
@@ -810,8 +831,6 @@ def delete_return(return_id):
     conn.commit()
 
     return redirect('/admin')
-
-
 
 
 if __name__ == '__main__':

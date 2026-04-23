@@ -573,3 +573,6 @@ MODIFY date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE returns MODIFY status VARCHAR(50);
 
+ALTER TABLE returns
+ADD COLUMN status ENUM('pending','approved','rejected','completed') DEFAULT 'pending';
+

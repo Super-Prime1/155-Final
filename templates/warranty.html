@@ -5,6 +5,7 @@
 <h2>Check Warranty</h2>
 
 <form method="POST">
+    <input type="hidden" name="action" value="check">
     <label>Order ID</label>
     <input type="number" name="order_id" required>
     <button type="submit">Check</button>
@@ -18,12 +19,12 @@
 
     {% if status == "active" %}
         <p style="color:green;">
-             Warranty is ACTIVE until {{ result.expiration_date }}
+             Warranty is ACTIVE until {{ result.expire_date }}
         </p>
 
     {% elif status == "expired" %}
         <p style="color:red;">
-             Warranty EXPIRED on {{ result.expiration_date }}
+             Warranty EXPIRED on {{ result.expire_date }}
         </p>
 
     {% else %}
@@ -33,5 +34,13 @@
     {% endif %}
 
 {% endif %}
-
+<div class="warrenty_create">
+    <form method="POST">
+    <h2>warranty create</h2>
+    <input type="hidden" name="action" value="create">
+    <label >experation date</label>
+    <input type="text" name="expire_box">
+    <button type="submit">submit</button>
+    </form>
+</div>
 {% endblock %}
