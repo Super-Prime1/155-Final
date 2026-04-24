@@ -12,6 +12,31 @@
     </div>
 </section>
 
+<section class="hot-deals">
+    <h2>Hot Deals</h2>
+
+    <div class="deals-container">
+        {% for dp in hot_deals %}
+        <div class="deal-card">
+            <h3>{{ dp['title'] }}</h3>
+            <p>{{ dp['description'] }}</p>
+
+            <p class="deal-price">
+                Now: ${{ dp['discountprice'] }}
+            </p>
+
+            <p class="original-price">
+                Was: ${{ dp['original_price'] }}
+            </p>
+
+            <a href="/shop/{{ dp['productid'] }}" class="btn deal-btn">
+                Shop Deal
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 <section class="features">
     <div class="feature-card">
         <h3>All-Day Comfort</h3>

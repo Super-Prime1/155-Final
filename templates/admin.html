@@ -144,7 +144,23 @@
 </ul>
 {% endif %}
 
+{% if filter_section == 'all' or filter_section == 'discountsproducts' %}
+<h3>All Discounted Products</h3>
+<ul class="admin-list">
+    {% for discount_products in alldiscountproducts %}
+    <li>
+        Product ID: {{ discount_products.productid }} - Discount ID: {{ discount_products.discountid }}
+        <a href="/admin/edit/discount_product/{{ discount_products.productid }}/{{ discount_products.discountid }}">Edit</a>
+
+<a href="/admin/delete/discount_product/{{ discount_products.productid }}/{{ discount_products.discountid }}"
+   onclick="return confirm('Delete discount product?')">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 </div>
 
 
 {% endblock %}
+
+
