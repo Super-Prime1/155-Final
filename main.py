@@ -499,8 +499,7 @@ def edit_discount_product(pid, did):
 
     if not data:
         return "No data provided", 400
-
-    # If you ONLY allow changing discountid (safe assumption)
+    
     conn.execute(text("""
         UPDATE discount_products
         SET discountid = :new_discountid
