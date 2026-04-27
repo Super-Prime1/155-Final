@@ -226,11 +226,16 @@ def shop():
 
     # 4. GET request → load products
     products = conn.execute(text("""
-        SELECT p.*, c.colorname,d.discountprice,d.length
+        SELECT 
+            p.*,
+            c.colorname,
+            d.discountprice,
+            d.length
         FROM products p
         LEFT JOIN color c ON p.colorid = c.colorid
-        LEFT JOIN discount d ON p.productid = d.productid
-        AND CURRENT_DATE <= d.length
+        LEFT JOIN discount_products dp ON p.productid = dp.productid
+        LEFT JOIN discount d ON dp.discountid = d.discountid
+            AND CURRENT_DATE <= d.length
     """)).fetchall()
 
     colors = conn.execute(text("""
