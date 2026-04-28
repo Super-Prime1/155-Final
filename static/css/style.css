@@ -199,6 +199,12 @@
     padding: 20px;
 }
 
+.shop-container img{
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+}
+
 /* Individual product card */
 .product-cardv{
     display: flex;
