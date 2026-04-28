@@ -518,6 +518,7 @@ def edit_discount_product(pid, did):
     conn.commit()
 
     return redirect('/admin')
+    
 
 
 
@@ -641,25 +642,90 @@ def saveprod():
 @app.route('/deleteprod/<int:pid>')
 def deleteprod(pid):
 
-    if 'role' not in session or session['role'] != 'vendor':
+    if 'role' not in session or session['role'] not in ['vendor', 'admin']:
         return redirect('/')
 
-    # Delete from dependent tables first
     conn.execute(text("DELETE FROM cartitem WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM orderitems WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM discount_products WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM review WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM wishlist WHERE productid = :pid"), {"pid": pid})
 
-    # Now delete the product
     conn.execute(text("""
         DELETE FROM products
-        WHERE productid = :pid AND vendorid = :vid
-    """), {"pid": pid, "vid": session['user_id']})
+        WHERE productid = :pid
+    """), {"pid": pid})
 
     conn.commit()
-    return redirect('/vendor')
+    return redirect('/admin' if session['role'] == 'admin' else '/vendor')
 
+@app.route('/admin/delete/user/<int:uid>')
+def admin_delete_user(uid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM users WHERE userid = :id"), {"id": uid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/order/<int:oid>')
+def admin_delete_order(oid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM orders WHERE orderid = :id"), {"id": oid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/review/<int:rid>')
+def admin_delete_review(rid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM review WHERE reviewid = :id"), {"id": rid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/warranty/<int:wid>')
+def admin_delete_warranty(wid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM warranty WHERE warrantyid = :id"), {"id": wid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/discount/<int:did>')
+def admin_delete_discount(did):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM discount WHERE discountid = :id"), {"id": did})
+    conn.commit()
+    return redirect('/admin')
+
+@app.route('/admin/link_discount', methods=['POST'])
+def link_discount():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    productid = request.form['productid']
+    discountid = request.form['discountid']
+
+    conn.execute(text("""
+        INSERT INTO discount_products (productid, discountid)
+        VALUES (:pid, :did)
+    """), {
+        "pid": productid,
+        "did": discountid
+    })
+
+    conn.commit()
+    return redirect('/admin')
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -824,9 +890,6 @@ def warranty():
         )
 
 
-
-
-
 @app.route('/return', methods=['GET', 'POST'])
 def returns():
 
@@ -947,7 +1010,39 @@ def delete_return(return_id):
 
     return redirect('/admin')
 
+@app.route('/admin/add_warranty', methods=['POST'])
+def add_warranty():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
 
+    expire_date = request.form['expire_date']
+
+    conn.execute(text("""
+        INSERT INTO warranty (expire_date)
+        VALUES (:date)
+    """), {"date": expire_date})
+
+    conn.commit()
+    return redirect('/admin')
+
+
+
+@app.route('/admin/add_discount', methods=['POST'])
+def add_discount():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        INSERT INTO discount (length, discountprice, price)
+        VALUES (:length, :dp, :price)
+    """), {
+        "length": request.form['length'],
+        "dp": request.form['discountprice'],
+        "price": request.form['price']
+    })
+
+    conn.commit()
+    return redirect('/admin')
 
 
 @app.route('/discount',methods=['get','post'])
