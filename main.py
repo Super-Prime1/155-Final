@@ -45,6 +45,24 @@ def index():
         convo_id, messages = get_chat_data(uid)
 
     return render_template('index.html', messages=messages,convo_id=convo_id)
+    discounted_products = conn.execute(text("""
+        SELECT 
+            p.productid,
+            p.title,
+            p.description,
+            p.price AS original_price,
+            d.discountprice,
+            d.length
+        FROM products p
+        JOIN discount_products dp 
+            ON p.productid = dp.productid
+        JOIN discount d 
+            ON d.discountid = dp.discountid
+        WHERE d.length >= CURDATE()
+    """)).mappings().all()
+
+    return render_template('index.html', hot_deals=discounted_products)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -257,11 +275,16 @@ def shop():
 
     # 4. GET request → load products
     products = conn.execute(text("""
-        SELECT p.*, c.colorname,d.discountprice,d.length
+        SELECT 
+            p.*,
+            c.colorname,
+            d.discountprice,
+            d.length
         FROM products p
         LEFT JOIN color c ON p.colorid = c.colorid
-        LEFT JOIN discount d ON p.productid = d.productid
-        AND CURRENT_DATE <= d.length
+        LEFT JOIN discount_products dp ON p.productid = dp.productid
+        LEFT JOIN discount d ON dp.discountid = d.discountid
+            AND CURRENT_DATE <= d.length
     """)).fetchall()
 
     colors = conn.execute(text("""
@@ -432,6 +455,7 @@ def admin():
     allreviews = conn.execute(text("SELECT * FROM review")).fetchall()
     allwarranties = conn.execute(text("SELECT * FROM warranty")).fetchall()
     alldiscounts = conn.execute(text("SELECT * FROM discount")).fetchall()
+    alldiscountproducts = conn.execute(text("SELECT * FROM discount_products")).fetchall()
     pending_returns = conn.execute(text("""
         SELECT * FROM returns
         WHERE status IN ('pending', 'pending_warranty', 'pending_expired')
@@ -467,16 +491,16 @@ def admin():
         allreviews=allreviews,
         allwarranties=allwarranties,
         alldiscounts=alldiscounts,
+        alldiscountproducts=alldiscountproducts,
         pending_returns=pending_returns,
         approved_returns=approved_returns,
         denied_returns=denied_returns,
         conversations=allconversations 
     )
 
-@app.route('/admin/edit/<table>/<int:item_id>', methods=['GET'])
+@app.route('/admin/edit/<table>/<int:item_id>', methods=['GET', 'POST'])
 def admin_edit(table, item_id):
 
-
     table_map = {
         "user": ("users", "userid"),
         "product": ("products", "productid"),
@@ -484,54 +508,87 @@ def admin_edit(table, item_id):
         "review": ("review", "reviewid"),
         "return": ("returns", "returnid"),
         "warranty": ("warranty", "warrantyid"),
-        "discount": ("discount", "discountid")
+        "discount": ("discount", "discountid"),
     }
+
+    if table not in table_map:
+        return "Invalid table", 400
 
     table_name, pk = table_map[table]
 
-    result = conn.execute(
-        text(f"SELECT * FROM {table_name} WHERE {pk} = :id"),
-        {"id": item_id}
-    )
+    # ---------------- GET ----------------
+    if request.method == "GET":
 
-    row = result.mappings().fetchone()
+        row = conn.execute(text(f"""
+            SELECT * FROM {table_name}
+            WHERE {pk} = :id
+        """), {"id": item_id}).mappings().fetchone()
 
-    return render_template("adminedit.html", table=table, row=row)
+        if not row:
+            return "Row not found", 404
 
+        return render_template("adminedit.html", table=table, row=row)
 
-@app.route('/admin/edit/<table>/<int:item_id>', methods=['POST'])
-def admin_edit_post(table, item_id):
-
+    # ---------------- POST ----------------
     data = dict(request.form)
+    data.pop('id', None)
 
-    table_map = {
-        "user": ("users", "userid"),
-        "product": ("products", "productid"),
-        "order": ("orders", "orderid"),
-        "review": ("review", "reviewid"),
-        "return": ("returns", "returnid"),
-        "warranty": ("warranty", "warrantyid"),
-        "discount": ("discount", "discountid")
-    }
+    if not data:
+        return "No data provided", 400
 
-    table_name, pk = table_map[table]
-
-    set_clause = ", ".join([f"{key} = :{key}" for key in data.keys()])
+    set_clause = ", ".join([f"{k} = :{k}" for k in data.keys()])
     data["id"] = item_id
 
-    conn.execute(
-        text(f"UPDATE {table_name} SET {set_clause} WHERE {pk} = :id"),
-        data
-    )
+    conn.execute(text(f"""
+        UPDATE {table_name}
+        SET {set_clause}
+        WHERE {pk} = :id
+    """), data)
+
     conn.commit()
-    if session.get('role') == 'vendor':
-        return redirect('/vendor')
 
-    elif session.get('role') == 'admin':
-        return redirect('/admin')
+    return redirect('/admin')
 
-    else:
-        return redirect('/')
+@app.route('/admin/edit/discount_product/<int:pid>/<int:did>', methods=['GET', 'POST'])
+def edit_discount_product(pid, did):
+
+    # ---------------- GET ----------------
+    if request.method == "GET":
+
+        row = conn.execute(text("""
+            SELECT * FROM discount_products
+            WHERE productid = :pid AND discountid = :did
+        """), {
+            "pid": pid,
+            "did": did
+        }).mappings().fetchone()
+
+        if not row:
+            return "Row not found", 404
+
+        return render_template("adminedit.html", table="discount_product", row=row)
+
+    # ---------------- POST ----------------
+    data = dict(request.form)
+    data.pop('productid', None)
+    data.pop('discountid', None)
+
+    if not data:
+        return "No data provided", 400
+    
+    conn.execute(text("""
+        UPDATE discount_products
+        SET discountid = :new_discountid
+        WHERE productid = :pid AND discountid = :did
+    """), {
+        "pid": pid,
+        "did": did,
+        "new_discountid": data.get("discountid", did)
+    })
+
+    conn.commit()
+
+    return redirect('/admin')
 
 
 

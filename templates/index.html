@@ -1,5 +1,63 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-    <h1>Welcome to Online Store!</h1>
+
+<div class="home-container">
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>Socktopus</h1>
+        <p>Eight times the comfort. Premium socks built for everyday performance and style.</p>
+        <a href="/shop" class="btn hero-btn">Shop Socktopus</a>
+    </div>
+</section>
+
+<section class="hot-deals">
+    <h2>Hot Deals</h2>
+
+    <div class="deals-container">
+        {% for dp in hot_deals %}
+        <div class="deal-card">
+            <h3>{{ dp['title'] }}</h3>
+            <p>{{ dp['description'] }}</p>
+
+            <p class="deal-price">
+                Now: ${{ dp['discountprice'] }}
+            </p>
+
+            <p class="original-price">
+                Was: ${{ dp['original_price'] }}
+            </p>
+
+            <a href="/shop/{{ dp['productid'] }}" class="btn deal-btn">
+                Shop Deal
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h3>All-Day Comfort</h3>
+        <p>Soft, breathable fabrics that keep your feet comfortable from morning to night.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Made with Quality</h3>
+        <p>Reinforced stitching and high-quality materials designed to last, and checked 8 times.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Smooth Style</h3>
+        <p>Modern designs that fit any look, from casual to athletic.</p>
+    </div>
+</section>
+
+<section class="cta">
+    <h2>Upgrade Your Sock Game</h2>
+    <p>Explore the Socktopus collection and find your perfect pair.</p>
+    <a href="/shop" class="btn cta-btn">Browse Collection</a>
+</section>
+
+</div>
+
 {% endblock %}
