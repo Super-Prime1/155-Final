@@ -40,18 +40,60 @@
 </nav>
 
 </header>
-<body>
+
 
 
 <main>
 
 {% block content %}
 
+
 {% endblock %}
 
 
+{% if session.get('user_id') and session.get('role') == 'customer' %}
+<div class="chat-float" id="chatfloat">
+    <button class="chat-button" onclick="toggleChat()">
+        <img id ="chat_icon"src="/static/images/adminchat.png" alt="Chat">
+    </button>
+</div>
+{% endif %}
 
-</body>
+<div id="chat-popup" class="chat-popup" style="display:none;">
+    <div class="chat-header">
+        <span>Support Chat</span>
+        <button onclick="toggleChat()">X</button>
+    </div>
+
+    <div class="chat-body" id="chat-box">
+    {% if messages is defined %}
+        {% for msg in messages %}
+            {% if msg.senderid == session['user_id'] %}
+                <div class="me">
+                    <strong>{{ session['username'] }}</strong><br>
+                    {{ msg.content }}
+                </div>
+            {% else %}
+                <div class="them">
+                    <strong>Admin</strong><br>
+                    {{ msg.content }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </div>
+
+    <form method="POST" action="/send_message" class="chat-input">
+        <input type="hidden" name="conversationid" value="{{ convo_id }}">
+        <input type="text" name="content" placeholder="Type a message..." required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+
+</main>
+
+
 <footer class="footer">
     <div class="footer-left">
         <h3>Socktopus</h3>
@@ -73,5 +115,17 @@
     </div>
 </footer>
     
+
+
+<script>
+function toggleChat() {
+    const popup = document.getElementById("chat-popup");
+    const icon = document.getElementById("chafloat")
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+    chatfloat.style.display = chatfloat.style.display === "none" ? "block" : "none";
+}   
+</script>
+
+
 </body>
 </html>
