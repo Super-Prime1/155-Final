@@ -1,0 +1,45 @@
+{% extends "truetemplate.html" %}
+
+{% block content %}
+
+<div class="chat-wrapper">
+
+    <div class="chat-sidebar">
+        <h3>Inbox</h3>
+
+        {% for convo in conversations %}
+            <a href="/admin/chat/{{ convo.conversationid }}">
+                {{ convo.username }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="chat-main">
+
+        <div class="messages">
+            {% for msg in messages %}
+                {% if msg.senderid == session['user_id'] %}
+                    <div class="me">
+                        <strong>{{ session['username'] }}</strong><br>
+                        {{ msg.content }}
+                    </div>
+                {% else %}
+                    <div class="them">
+                        <strong>{{ msg.sender_name }}</strong><br>
+                        {{ msg.content }}
+                    </div>
+                {% endif %}
+        {% endfor %}
+        </div>
+
+        <form method="POST" action="/admin/send_message">
+            <input type="hidden" name="conversationid" value="{{ convo_id }}">
+            <input type="text" name="content">
+            <button type="submit">Send</button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

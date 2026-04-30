@@ -17,6 +17,7 @@
         <option value="returns" {% if filter_section == 'returns' %}selected{% endif %}>Returns</option>
         <option value="warranties" {% if filter_section == 'warranties' %}selected{% endif %}>Warranties</option>
         <option value="discounts" {% if filter_section == 'discounts' %}selected{% endif %}>Discounts</option>
+        <option value="messages" {% if filter_section == 'messages' %}selected{% endif %}>Messages</option>
     </select>
 </form>
 
@@ -159,6 +160,19 @@
 </ul>
 {% endif %}
 </div>
+
+{% if filter_section == 'all' or filter_section == 'messages' %}
+<h3>Customer Messages</h3>
+
+<ul class="admin-list">
+    {% for convo in conversations %}
+    <li>
+        User ID: {{ convo.customerid }}
+        <a href="/admin/chat/{{ convo.conversationid }}">Open Chat</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 
 {% endblock %}
