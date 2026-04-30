@@ -624,3 +624,27 @@ INSERT INTO color (colorid, colorname)
 VALUES (5, 'white');
 
 
+
+
+
+DROP TABLE chat;
+
+create table conversation(
+conversationid int auto_increment primary key,
+customerid int not null,
+adminid int null,
+created_at datetime default current_timestamp,
+foreign key (customerid) references users(userid),
+foreign key (adminid) references users(userid)
+);
+
+create table message(
+messageid int auto_increment primary key,
+conversationid int not null,
+senderid int not null,
+content text not null,
+created_at datetime default current_timestamp,
+
+foreign key (conversationid) references conversation (conversationid),
+foreign key (senderid) references users(userid)
+)

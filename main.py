@@ -12,9 +12,39 @@ conn_str = "mysql+pymysql://root:cset155@localhost/online_store"
 engine = create_engine(conn_str, echo=True)
 conn = engine.connect()
 
+def get_chat_data(uid):
+    convo = conn.execute(text("""
+        SELECT conversationid 
+        FROM conversation
+        WHERE customerid = :uid
+        LIMIT 1
+    """), {"uid": uid}).mappings().fetchone()
+
+    if not convo:
+        return None, []
+
+    cid = convo['conversationid']
+
+    messages = conn.execute(text("""
+        SELECT * FROM message
+        WHERE conversationid = :cid
+        ORDER BY created_at ASC
+    """), {"cid": cid}).mappings().fetchall()
+
+    return cid, messages
+
 
 @app.route('/')
 def index():
+    uid = session.get('user_id')
+
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
+
+    return render_template('index.html', messages=messages,convo_id=convo_id)
     discounted_products = conn.execute(text("""
         SELECT 
             p.productid,
@@ -49,8 +79,16 @@ def login():
             session['username'] = user.username
             session['role'] = user.role
 
-            return redirect('/account')
+            conn.execute(text("""
+            INSERT INTO conversation (customerid)
+            SELECT :uid
+            WHERE NOT EXISTS (
+                SELECT 1 FROM conversation WHERE customerid = :uid
+            )
+            """), {"uid": user.userid})
 
+            conn.commit()
+            return redirect('/account') 
         else:
             return render_template('signup.html', error="Invalid login")
 
@@ -111,7 +149,10 @@ def account():
         return redirect('/login')
 
     uid = session['user_id']
-
+    messages = []
+    convo_id = None
+    if uid:
+        convo_id, messages = get_chat_data(uid)
     # Fetch user info
     user = conn.execute(
         text("SELECT * FROM users WHERE userid = :uid"),
@@ -133,7 +174,7 @@ def account():
         {"uid": uid}
     ).mappings().fetchall()
 
-    return render_template('account.html', user=user, orders=userorders)
+    return render_template('account.html', user=user, orders=userorders,messages=messages,convo_id=convo_id)
 
 
 @app.route('/logout')
@@ -160,6 +201,14 @@ def shop():
         session['cartid'] = result.lastrowid
 
     cartid = session['cartid']
+
+    uid = session.get('user_id')
+
+    messages = []
+    convo_id = None
+
+    if uid:
+            convo_id, messages = get_chat_data(uid)
 
     # 3. Handle POST actions
     if request.method == 'POST':
@@ -242,16 +291,24 @@ def shop():
         SELECT colorid, colorname FROM color
     """)).fetchall()
 
-    return render_template('shop.html', products=products, colors=colors)
+    return render_template('shop.html', products=products, colors=colors,messages=messages,convo_id=convo_id)
 
 
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
 
-    # 1. User must be logged in
+     # 1. User must be logged in
     if 'user_id' not in session:
         return redirect('/signup')
+    
+
+    uid = session.get('user_id')
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
 
     # 2. Ensure cart exists
     if 'cartid' not in session:
@@ -300,7 +357,7 @@ def cart():
 
     cart_total = sum(item.price * item.quantity for item in cart_items)
 
-    return render_template("cart.html", cart_items=cart_items, cart_total=cart_total)
+    return render_template("cart.html", cart_items=cart_items, cart_total=cart_total,messages=messages,convo_id=convo_id)
 
 
 
@@ -309,6 +366,13 @@ def cart():
 def reviews():
     if not session.get('user_id'):
         return redirect('/signup')
+    
+    uid = session['user_id']
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
     
     if request.method == 'POST':
         name = session.get('username')
@@ -363,7 +427,7 @@ def reviews():
     
     result = conn.execute(sql).fetchall()
 
-    return render_template('reviews.html',reviews = result)
+    return render_template('reviews.html',reviews = result,messages=messages,convo_id=convo_id)
 
 
 
@@ -410,6 +474,12 @@ def admin():
         ORDER BY returnid DESC
     """)).fetchall()
 
+    allconversations = conn.execute(text("""
+        SELECT c.conversationid, c.customerid, u.username
+        FROM conversation c
+        JOIN users u ON c.customerid = u.userid
+        ORDER BY c.created_at DESC
+    """)).mappings().fetchall()
 
 
     return render_template(
@@ -424,7 +494,8 @@ def admin():
         alldiscountproducts=alldiscountproducts,
         pending_returns=pending_returns,
         approved_returns=approved_returns,
-        denied_returns=denied_returns
+        denied_returns=denied_returns,
+        conversations=allconversations 
     )
 
 @app.route('/admin/edit/<table>/<int:item_id>', methods=['GET', 'POST'])
@@ -733,6 +804,13 @@ def checkout():
     # Must be logged in
     if 'user_id' not in session:
         return redirect('/login')
+    
+    uid = session['user_id']
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
 
     cartid = session.get('cartid')
 
@@ -816,7 +894,9 @@ def checkout():
         return render_template(
             "checkoutfinal.html",
             total=total,
-            order_id=order_id
+            order_id=order_id,
+            messages=messages,
+            convo_id=convo_id
         )
     
     return render_template('checkout.html', cart_items=cart_items, total=total)
@@ -827,6 +907,12 @@ def warranty():
 
     if 'user_id' not in session:
         return redirect('/login')
+    uid = session['user_id']
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
 
     result = None
     status = None
@@ -886,7 +972,9 @@ def warranty():
             "warranty.html",
             result=result,
             status=status,
-            current_date=date.today()
+            current_date=date.today(),
+            messages=messages,
+            convo_id=convo_id
         )
 
 
@@ -897,6 +985,11 @@ def returns():
         return redirect('/login')
 
     uid = session['user_id']
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
 
     if request.method == 'POST':
 
@@ -961,7 +1054,7 @@ def returns():
         ORDER BY returnid DESC
     """), {"uid": uid}).fetchall()
 
-    return render_template("return.html", user_returns=user_returns)
+    return render_template("return.html", user_returns=user_returns,messages=messages,convo_id=convo_id)
 
 
 @app.route('/return/approve/<int:rid>')
@@ -1071,6 +1164,157 @@ def create_discount():
         conn.commit()
         return redirect('/discount')
     return render_template('discount.html')
+
+
+
+
+
+@app.route("/chat")
+def chat():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+    messages = []
+    convo_id = None
+
+    if uid:
+        convo_id, messages = get_chat_data(uid)
+
+    convo = conn.execute(text("""
+        SELECT * FROM conversation
+        WHERE customerid = :uid
+        LIMIT 1
+    """), {"uid": uid}).mappings().fetchone()
+
+    if not convo:
+        conn.execute(text("""
+            INSERT INTO conversation (customerid)
+            VALUES (:uid)
+        """), {"uid": uid})
+        conn.commit()
+
+        convo_id = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+    else:
+        convo_id = convo['conversationid']
+
+    messages = conn.execute(text("""
+            select m.*,u.username as sender_name
+            from message m
+            join users u on m.senderid = u.userid
+            where m.conversationid = :cid
+            order by m.created_at asc
+    """), {"cid": convo_id}).mappings().fetchall()
+
+    return render_template("chat.html", messages=messages, convo_id=convo_id)
+
+
+
+@app.route("/send_message", methods=['POST'])
+def send_message():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    convo = conn.execute(text("""
+        SELECT conversationid 
+        FROM conversation
+        WHERE customerid = :uid
+        LIMIT 1
+    """), {"uid": uid}).mappings().fetchone()
+
+    if not convo:
+        return "No conversation found"
+
+    cid = convo['conversationid']
+
+    content = request.form['content']
+
+    if not content:
+        return redirect(request.referrer or '/')
+
+    conn.execute(text("""
+        INSERT INTO message (conversationid, senderid, content)
+        VALUES (:cid, :sid, :content)
+    """), {
+        "cid": cid,
+        "sid": uid,
+        "content": content
+    })
+
+    conn.commit()
+
+    return redirect(request.referrer or '/')
+
+
+@app.route('/admin/chat/<int:cid>')
+def admin_chat(cid):
+
+    if session.get('role') != 'admin':
+        return redirect('/')
+
+    
+    conn.execute(text("""
+        UPDATE conversation
+        SET adminid = :aid
+        WHERE conversationid = :cid AND adminid IS NULL
+    """), {
+        "aid": session['user_id'],
+        "cid": cid
+    })
+    conn.commit()
+
+    conversations = conn.execute(text("""
+        SELECT c.conversationid, u.username
+        FROM conversation c
+        JOIN users u ON c.customerid = u.userid
+        ORDER BY c.conversationid DESC
+    """)).mappings().fetchall()
+
+    messages = conn.execute(text("""
+            select m.*,u.username as sender_name
+            from message m
+            join users u on m.senderid = u.userid
+            where m.conversationid = :cid
+            order by m.created_at asc
+    """), {"cid": cid}).mappings().fetchall()
+
+    return render_template(
+        "admin_chat.html",
+        messages=messages,
+        conversations=conversations,
+        convo_id=cid
+    )
+
+
+@app.route('/admin/send_message', methods=['POST'])
+def admin_send_message():
+    if session.get('role') != 'admin':
+        return redirect('/')
+
+    cid = request.form['conversationid']
+
+    convo = conn.execute(text("""
+        SELECT * FROM conversation
+        WHERE conversationid = :cid
+    """), {"cid": cid}).fetchone()
+
+    if not convo:
+        return "Invalid conversation"
+
+    conn.execute(text("""
+        INSERT INTO message (conversationid, senderid, content)
+        VALUES (:cid, :sid, :content)
+    """), {
+        "cid": cid,
+        "sid": session['user_id'],
+        "content": request.form['content']
+    })
+
+    conn.commit()
+
+    return redirect(f"/admin/chat/{cid}")
 
 
 
