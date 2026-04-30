@@ -725,7 +725,7 @@ def link_discount():
     })
 
     conn.commit()
-    return redirect('/admin')
+    return  redirect('/admin')
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
