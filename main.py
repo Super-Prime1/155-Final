@@ -44,7 +44,7 @@ def index():
     if uid:
         convo_id, messages = get_chat_data(uid)
 
-    return render_template('index.html', messages=messages,convo_id=convo_id)
+
     discounted_products = conn.execute(text("""
         SELECT 
             p.productid,
@@ -61,7 +61,8 @@ def index():
         WHERE d.length >= CURDATE()
     """)).mappings().all()
 
-    return render_template('index.html', hot_deals=discounted_products)
+    return render_template('index.html', hot_deals=discounted_products, messages=messages,convo_id=convo_id)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
