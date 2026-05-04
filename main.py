@@ -1001,6 +1001,8 @@ def warranty():
 @app.route('/return', methods=['GET', 'POST'])
 def returns():
 
+    description = request.form.get("description", "")
+
     if 'user_id' not in session:
         return redirect('/login')
 
