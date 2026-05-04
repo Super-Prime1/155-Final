@@ -187,6 +187,8 @@ def logout():
 @app.route('/shop', methods=['GET', 'POST'])
 def shop():
 
+    q = request.args.get("q", "")
+
     # 1. User must be logged in
     if 'user_id' not in session:
         return redirect('/signup')
@@ -274,25 +276,42 @@ def shop():
         conn.commit()
         return redirect('/shop')
 
+
     # 4. GET request → load products
-    products = conn.execute(text("""
-        SELECT 
-            p.*,
-            c.colorname,
-            d.discountprice,
-            d.length
-        FROM products p
-        LEFT JOIN color c ON p.colorid = c.colorid
-        LEFT JOIN discount_products dp ON p.productid = dp.productid
-        LEFT JOIN discount d ON dp.discountid = d.discountid
-            AND CURRENT_DATE <= d.length
-    """)).fetchall()
+    if q:
+        products = conn.execute(text("""
+            SELECT 
+                p.*,
+                c.colorname,
+                d.discountprice,
+                d.length
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+            LEFT JOIN discount_products dp ON p.productid = dp.productid
+            LEFT JOIN discount d ON dp.discountid = d.discountid
+                AND CURRENT_DATE <= d.length
+            WHERE p.title LIKE :q
+            OR p.description LIKE :q
+        """), {"q": f"%{q}%"}).fetchall()
+    else:
+        products = conn.execute(text("""
+            SELECT 
+                p.*,
+                c.colorname,
+                d.discountprice,
+                d.length
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+            LEFT JOIN discount_products dp ON p.productid = dp.productid
+            LEFT JOIN discount d ON dp.discountid = d.discountid
+                AND CURRENT_DATE <= d.length
+        """)).fetchall()
 
     colors = conn.execute(text("""
         SELECT colorid, colorname FROM color
     """)).fetchall()
 
-    return render_template('shop.html', products=products, colors=colors,messages=messages,convo_id=convo_id)
+    return render_template('shop.html', products=products, colors=colors ,messages=messages, convo_id=convo_id)
 
 
 
