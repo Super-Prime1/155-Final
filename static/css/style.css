@@ -332,113 +332,163 @@
     padding: 5px;
 }
 
+
 /* Admin Panel */
 
-/* Admin Container */
-.admin-container {
+/* --- Admin Container --- */
+.admin-container{
+    width: 90%;
     max-width: 1100px;
-    margin: 0 auto;
-    padding: 25px;
-    background: #ffffff;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-/* Headings */
-.admin-container h2 {
+.admin-container h2{
     font-size: 32px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     color: #222;
 }
 
-.admin-container h3 {
-    margin-top: 35px;
-    font-size: 22px;
-    color: #333;
-    border-bottom: 2px solid #e3e3e3;
-    padding-bottom: 6px;
+.admin-container p{
+    color: #555;
+    margin-bottom: 20px;
 }
 
-/* Filter Dropdown */
-.admin-filter {
-    margin: 20px 0;
+/* --- Filter Dropdown --- */
+.admin-filter{
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-bottom: 25px;
 }
 
-.admin-filter select {
+.admin-filter label{
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-filter select{
     padding: 8px 12px;
-    font-size: 15px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    background: #fafafa;
+    font-size: 15px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
-.admin-filter select:hover {
-    border-color: #888;
+/* --- Section Headers --- */
+.admin-container h3{
+    margin-top: 35px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333;
 }
 
-/* List Styling */
-.admin-list {
+.admin-container h4{
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 20px;
+    color: #444;
+}
+
+/* --- Admin List --- */
+.admin-list{
     list-style: none;
     padding: 0;
-    margin: 15px 0;
+    margin: 0;
 }
 
-.admin-list li {
-    background: #f8f8f8;
-    padding: 14px 16px;
-    margin-bottom: 10px;
+.admin-list li{
+    background: #fafafa;
+    padding: 14px 18px;
+    margin: 10px 0;
     border-radius: 8px;
-    border: 1px solid #e1e1e1;
+    border: 1px solid #e5e5e5;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: 0.2s;
+    transition: 0.25s ease;
 }
 
-.admin-list li:hover {
-    background: #f1f1f1;
-    border-color: #ccc;
+.admin-list li:hover{
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
 }
 
-/* Edit/Delete Buttons */
-.admin-list a {
+/* --- Action Links --- */
+.admin-list a{
     margin-left: 12px;
-    padding: 6px 10px;
-    border-radius: 5px;
-    font-size: 14px;
     text-decoration: none;
-    transition: 0.2s;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: 0.25s ease;
 }
 
 /* Edit Button */
-.admin-list a[href*="edit"] {
-    background: #30ad99;
+.admin-list a[href*="edit"]{
+    background: #d6a317;
     color: white;
+    border: 1px solid #d6a317;
 }
 
-.admin-list a[href*="edit"]:hover {
-    background: #1c665a;
+.admin-list a[href*="edit"]:hover{
+    background: #85650f;
+    border-color: #85650f;
 }
 
 /* Delete Button */
-.admin-list a[href*="delete"] {
+.admin-list a[href*="delete"],
+.admin-list a[href*="deny"]{
     background: #dc3545;
     color: white;
+    border: 1px solid #dc3545;
 }
 
-.admin-list a[href*="delete"]:hover {
-    background: #b52a36;
+.admin-list a[href*="delete"]:hover,
+.admin-list a[href*="deny"]:hover{
+    background: #b02a37;
+    border-color: #b02a37;
 }
 
-/* Horizontal Rule */
-.admin-container hr {
-    margin: 25px 0;
+/* Approve Button */
+.admin-list a[href*="approve"]{
+    background: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.admin-list a[href*="approve"]:hover{
+    background: #1e7e34;
+    border-color: #1e7e34;
+}
+
+/* --- Forms (Add Warranty, Add Discount, etc.) --- */
+.admin-container form input,
+.admin-container form button{
+    padding: 10px 12px;
+    margin: 5px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.admin-container form button{
+    background: #ee8309;
+    color: white;
     border: none;
-    border-top: 1px solid #ddd;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
 }
+
+.admin-container form button:hover{
+    background: #9e5706;
+}
+
 
 
 /* Admin Edit Form */
@@ -1553,4 +1603,58 @@ transition: transform 0.2 ease;
     padding: 40px;
     font-size: 18px;
     color: #777;
+}
+
+/* --- Order List Container --- */
+.order-cardv{
+    list-style: none;
+    background: #ffffff;
+    padding: 18px 22px;
+    margin: 15px 0;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.25s ease;
+}
+
+/* Hover effect */
+.order-cardv:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* --- Order Info Section --- */
+.order-info{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-info span{
+    font-size: 15px;
+    color: #333;
+}
+
+.order-id{
+    font-weight: 700;
+    font-size: 17px;
+    color: #222;
+}
+
+.order-total{
+    font-weight: 600;
+    color: #007bff;
+}
+
+.order-status{
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* --- Order Actions --- */
+.order-actions{
+    display: flex;
+    align-items: center;
 }
