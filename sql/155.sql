@@ -648,3 +648,5 @@ created_at datetime default current_timestamp,
 foreign key (conversationid) references conversation (conversationid),
 foreign key (senderid) references users(userid)
 )
+
+

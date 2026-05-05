@@ -17,9 +17,7 @@
     <div class="product-card">
 
         <h2 class="product-title">{{ p.title }}</h2>
-        <a href="{{ p.image }}" target="_blank">
-            <img src="{{ p.image }}" class="product-image">
-        </a>
+        <img src="{{ p.image }}">
         {% if p.discountprice%}
         <del>${{ p.price }}</del>
         <strong> sale: ${{p.discountprice }}</strong>

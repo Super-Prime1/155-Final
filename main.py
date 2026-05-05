@@ -186,6 +186,8 @@ def logout():
 @app.route('/shop', methods=['GET', 'POST'])
 def shop():
 
+    q = request.args.get("q", "")
+
     # 1. User must be logged in
     if 'user_id' not in session:
         return redirect('/signup')
@@ -273,19 +275,36 @@ def shop():
         conn.commit()
         return redirect('/shop')
 
+
     # 4. GET request → load products
-    products = conn.execute(text("""
-        SELECT 
-            p.*,
-            c.colorname,
-            d.discountprice,
-            d.length
-        FROM products p
-        LEFT JOIN color c ON p.colorid = c.colorid
-        LEFT JOIN discount_products dp ON p.productid = dp.productid
-        LEFT JOIN discount d ON dp.discountid = d.discountid
-            AND CURRENT_DATE <= d.length
-    """)).fetchall()
+    if q:
+        products = conn.execute(text("""
+            SELECT 
+                p.*,
+                c.colorname,
+                d.discountprice,
+                d.length
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+            LEFT JOIN discount_products dp ON p.productid = dp.productid
+            LEFT JOIN discount d ON dp.discountid = d.discountid
+                AND CURRENT_DATE <= d.length
+            WHERE p.title LIKE :q
+            OR p.description LIKE :q
+        """), {"q": f"%{q}%"}).fetchall()
+    else:
+        products = conn.execute(text("""
+            SELECT 
+                p.*,
+                c.colorname,
+                d.discountprice,
+                d.length
+            FROM products p
+            LEFT JOIN color c ON p.colorid = c.colorid
+            LEFT JOIN discount_products dp ON p.productid = dp.productid
+            LEFT JOIN discount d ON dp.discountid = d.discountid
+                AND CURRENT_DATE <= d.length
+        """)).fetchall()
 
     colors = conn.execute(text("""
         SELECT colorid, colorname FROM color
@@ -512,7 +531,7 @@ def admin_edit(table, item_id):
     }
 
     if table not in table_map:
-        return "Invalid table", 400
+        return render_template('admin.html', error="Invalid table")
 
     table_name, pk = table_map[table]
 
@@ -525,16 +544,36 @@ def admin_edit(table, item_id):
         """), {"id": item_id}).mappings().fetchone()
 
         if not row:
-            return "Row not found", 404
+            return render_template('admin.html', error="Row not found")
 
         return render_template("adminedit.html", table=table, row=row)
 
     # ---------------- POST ----------------
-    data = dict(request.form)
-    data.pop('id', None)
+    raw_data = dict(request.form)
+    raw_data.pop('id', None)
+
+    data = {}
+
+    def parse_int(value):
+        if value in (None, "", "None"):
+            return None
+        return int(value)
+
+    def parse_float(value):
+        if value in (None, "", "None"):
+            return None
+        return float(value)
+
+    for key, value in raw_data.items():
+        if key in ["price", "discountprice"]:
+            data[key] = parse_float(value)
+        elif key.endswith("id") or key in ["instock"]:
+            data[key] = parse_int(value)
+        else:
+            data[key] = value
 
     if not data:
-        return "No data provided", 400
+        return render_template('admin.html', error="No data provided")
 
     set_clause = ", ".join([f"{k} = :{k}" for k in data.keys()])
     data["id"] = item_id
@@ -589,6 +628,26 @@ def edit_discount_product(pid, did):
     conn.commit()
 
     return redirect('/admin')
+
+
+@app.route('/admin/delete/discount_product/<int:pid>/<int:did>')
+def delete_discount_product(pid, did):
+
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        DELETE FROM discount_products
+        WHERE productid = :pid AND discountid = :did
+    """), {
+        "pid": pid,
+        "did": did
+    })
+
+    conn.commit()
+
+    return redirect('/admin')
+    
 
 
 
@@ -712,25 +771,90 @@ def saveprod():
 @app.route('/deleteprod/<int:pid>')
 def deleteprod(pid):
 
-    if 'role' not in session or session['role'] != 'vendor':
+    if 'role' not in session or session['role'] not in ['vendor', 'admin']:
         return redirect('/')
 
-    # Delete from dependent tables first
     conn.execute(text("DELETE FROM cartitem WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM orderitems WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM discount_products WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM review WHERE productid = :pid"), {"pid": pid})
     conn.execute(text("DELETE FROM wishlist WHERE productid = :pid"), {"pid": pid})
 
-    # Now delete the product
     conn.execute(text("""
         DELETE FROM products
-        WHERE productid = :pid AND vendorid = :vid
-    """), {"pid": pid, "vid": session['user_id']})
+        WHERE productid = :pid
+    """), {"pid": pid})
 
     conn.commit()
-    return redirect('/vendor')
+    return redirect('/admin' if session['role'] == 'admin' else '/vendor')
 
+@app.route('/admin/delete/user/<int:uid>')
+def admin_delete_user(uid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM users WHERE userid = :id"), {"id": uid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/order/<int:oid>')
+def admin_delete_order(oid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM orders WHERE orderid = :id"), {"id": oid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/review/<int:rid>')
+def admin_delete_review(rid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM review WHERE reviewid = :id"), {"id": rid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/warranty/<int:wid>')
+def admin_delete_warranty(wid):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM warranty WHERE warrantyid = :id"), {"id": wid})
+    conn.commit()
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/discount/<int:did>')
+def admin_delete_discount(did):
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("DELETE FROM discount WHERE discountid = :id"), {"id": did})
+    conn.commit()
+    return redirect('/admin')
+
+@app.route('/admin/link_discount', methods=['POST'])
+def link_discount():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    productid = request.form['productid']
+    discountid = request.form['discountid']
+
+    conn.execute(text("""
+        INSERT INTO discount_products (productid, discountid)
+        VALUES (:pid, :did)
+    """), {
+        "pid": productid,
+        "did": discountid
+    })
+
+    conn.commit()
+    return  redirect('/admin')
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -914,11 +1038,10 @@ def warranty():
         )
 
 
-
-
-
 @app.route('/return', methods=['GET', 'POST'])
 def returns():
+
+    description = request.form.get("description", "")
 
     if 'user_id' not in session:
         return redirect('/login')
@@ -1042,7 +1165,39 @@ def delete_return(return_id):
 
     return redirect('/admin')
 
+@app.route('/admin/add_warranty', methods=['POST'])
+def add_warranty():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
 
+    expire_date = request.form['expire_date']
+
+    conn.execute(text("""
+        INSERT INTO warranty (expire_date)
+        VALUES (:date)
+    """), {"date": expire_date})
+
+    conn.commit()
+    return redirect('/admin')
+
+
+
+@app.route('/admin/add_discount', methods=['POST'])
+def add_discount():
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        INSERT INTO discount (length, discountprice, price)
+        VALUES (:length, :dp, :price)
+    """), {
+        "length": request.form['length'],
+        "dp": request.form['discountprice'],
+        "price": request.form['price']
+    })
+
+    conn.commit()
+    return redirect('/admin')
 
 
 @app.route('/discount',methods=['get','post'])
