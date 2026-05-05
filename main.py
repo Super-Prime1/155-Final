@@ -44,7 +44,7 @@ def index():
     if uid:
         convo_id, messages = get_chat_data(uid)
 
-
+    
     discounted_products = conn.execute(text("""
         SELECT 
             p.productid,
@@ -61,8 +61,7 @@ def index():
         WHERE d.length >= CURDATE()
     """)).mappings().all()
 
-    return render_template('index.html', hot_deals=discounted_products, messages=messages,convo_id=convo_id)
-
+    return render_template('index.html', hot_deals=discounted_products, messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -175,7 +174,7 @@ def account():
         {"uid": uid}
     ).mappings().fetchall()
 
-    return render_template('account.html', user=user, orders=userorders,messages=messages,convo_id=convo_id)
+    return render_template('account.html', user=user, orders=userorders,messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 @app.route('/logout')
@@ -311,7 +310,7 @@ def shop():
         SELECT colorid, colorname FROM color
     """)).fetchall()
 
-    return render_template('shop.html', products=products, colors=colors ,messages=messages, convo_id=convo_id)
+    return render_template('shop.html', products=products, colors=colors,messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 
@@ -377,7 +376,7 @@ def cart():
 
     cart_total = sum(item.price * item.quantity for item in cart_items)
 
-    return render_template("cart.html", cart_items=cart_items, cart_total=cart_total,messages=messages,convo_id=convo_id)
+    return render_template("cart.html", cart_items=cart_items, cart_total=cart_total,messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 
@@ -447,7 +446,7 @@ def reviews():
     
     result = conn.execute(sql).fetchall()
 
-    return render_template('reviews.html',reviews = result,messages=messages,convo_id=convo_id)
+    return render_template('reviews.html',reviews = result,messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 
@@ -955,7 +954,8 @@ def checkout():
             total=total,
             order_id=order_id,
             messages=messages,
-            convo_id=convo_id
+            convo_id=convo_id,
+            show_chat_popup=True
         )
     
     return render_template('checkout.html', cart_items=cart_items, total=total)
@@ -1033,7 +1033,8 @@ def warranty():
             status=status,
             current_date=date.today(),
             messages=messages,
-            convo_id=convo_id
+            convo_id=convo_id,
+            show_chat_popup=True
         )
 
 
@@ -1115,7 +1116,7 @@ def returns():
         ORDER BY returnid DESC
     """), {"uid": uid}).fetchall()
 
-    return render_template("return.html", user_returns=user_returns,messages=messages,convo_id=convo_id)
+    return render_template("return.html", user_returns=user_returns,messages=messages,convo_id=convo_id,show_chat_popup=True)
 
 
 @app.route('/return/approve/<int:rid>')
@@ -1239,20 +1240,18 @@ def chat():
     messages = []
     convo_id = None
 
-    if uid:
-        convo_id, messages = get_chat_data(uid)
-
     convo = conn.execute(text("""
         SELECT * FROM conversation
         WHERE customerid = :uid
+        AND type = 'admin'
         LIMIT 1
     """), {"uid": uid}).mappings().fetchone()
 
     if not convo:
         conn.execute(text("""
-            INSERT INTO conversation (customerid)
-            VALUES (:uid)
-        """), {"uid": uid})
+            INSERT INTO conversation (customerid, adminid, type)
+            VALUES (:uid, :aid, 'admin')
+        """), {"uid": uid,"aid":None})
         conn.commit()
 
         convo_id = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
@@ -1278,19 +1277,9 @@ def send_message():
 
     uid = session['user_id']
 
-    convo = conn.execute(text("""
-        SELECT conversationid 
-        FROM conversation
-        WHERE customerid = :uid
-        LIMIT 1
-    """), {"uid": uid}).mappings().fetchone()
+    cid = request.form.get('conversationid')
 
-    if not convo:
-        return "No conversation found"
-
-    cid = convo['conversationid']
-
-    content = request.form['content']
+    content = request.form.get('content',"")
 
     if not content:
         return redirect(request.referrer or '/')
@@ -1378,6 +1367,246 @@ def admin_send_message():
     return redirect(f"/admin/chat/{cid}")
 
 
+@app.route('/vendor/chat/<int:cid>')
+def vendor_chat(cid):
+
+    if session.get('role') != 'vendor':
+        return redirect('/')
+
+    convo = conn.execute(text("""
+        SELECT *
+        FROM conversation
+        WHERE conversationid = :cid
+        AND vendorid = :vid
+    """), {
+        "cid": cid,
+        "vid": session['user_id']
+    }).mappings().fetchone()
+
+    if not convo:
+        return redirect('/')
+
+    conversations = conn.execute(text("""
+        SELECT
+            c.conversationid,
+            u.username
+        FROM conversation c
+        JOIN users u
+            ON c.customerid = u.userid
+        WHERE c.vendorid = :vid
+        ORDER BY c.created_at ASC
+    """), {
+        "vid": session['user_id']
+    }).mappings().fetchall()
+
+    messages = conn.execute(text("""
+        SELECT
+            m.*,
+            u.username AS sender_name
+        FROM message m
+        JOIN users u
+            ON m.senderid = u.userid
+        WHERE m.conversationid = :cid
+        ORDER BY m.created_at ASC
+    """), {
+        "cid": cid
+    }).mappings().fetchall()
+
+    return render_template(
+        'vendor_chat.html',
+        messages=messages,
+        conversations=conversations,
+        convo_id=cid
+    )
+
+@app.route('/vendor/send_message', methods=['POST'])
+def vendor_send_message():
+
+    if session.get('role') != 'vendor':
+        return redirect('/')
+
+    cid = int(request.form['conversationid'])
+
+    content = request.form.get('content', '').strip()
+
+    if not content:
+        return redirect(request.referrer or '/')
+
+    convo = conn.execute(text("""
+        SELECT *
+        FROM conversation
+        WHERE conversationid = :cid
+        AND vendorid = :vid
+    """), {
+        "cid": cid,
+        "vid": session['user_id']
+    }).mappings().fetchone()
+
+    if not convo:
+        return redirect('/')
+
+    conn.execute(text("""
+        INSERT INTO message (
+            conversationid,
+            senderid,
+            content
+        )
+        VALUES (
+            :cid,
+            :sid,
+            :content
+        )
+    """), {
+        "cid": cid,
+        "sid": session['user_id'],
+        "content": content
+    })
+
+    conn.commit()
+
+    return redirect(f"/vendor/chat/{cid}")
+
+
+
+
+
+@app.route('/vendor/inbox')
+def vendor_inbox():
+
+    if session.get('role') != 'vendor':
+        return redirect('/')
+
+    conversations = conn.execute(text("""
+        SELECT
+            c.conversationid,
+            u.username
+        FROM conversation c
+        JOIN users u
+            ON c.customerid = u.userid
+        WHERE c.vendorid = :vid
+        ORDER BY c.created_at ASC
+    """), {
+        "vid": session['user_id']
+    }).mappings().fetchall()
+
+    if not conversations:
+        return "No conversations yet"
+
+    return render_template("vendor_chat.html",
+    conversations=conversations,messages=[],
+    convo_id=None
+    )
+
+
+@app.route('/start_chat/<int:vendor_id>')
+def start_chat(vendor_id):
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    convo = conn.execute(text("""
+        SELECT conversationid
+        FROM conversation
+        WHERE customerid = :uid
+        AND vendorid = :vid
+        LIMIT 1
+    """), {
+        "uid": uid,
+        "vid": vendor_id
+    }).mappings().fetchone()
+
+    if not convo:
+        conn.execute(text("""
+            INSERT INTO conversation (customerid, vendorid)
+            VALUES (:uid, :vid)
+        """), {
+            "uid": uid,
+            "vid": vendor_id
+        })
+        conn.commit()
+
+        cid = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+    else:
+        cid = convo['conversationid']
+
+    return redirect(f"/inbox/{cid}")
+
+
+
+@app.route('/inbox/<int:cid>')
+def inbox(cid):
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    conversations = conn.execute(text("""
+        SELECT c.conversationid, u.username
+        FROM conversation c
+        JOIN users u ON c.vendorid = u.userid
+        WHERE c.customerid = :uid
+        ORDER BY c.created_at DESC
+    """), {"uid": uid}).mappings().fetchall()
+
+    messages = conn.execute(text("""
+        SELECT m.*, u.username AS sender_name
+        FROM message m
+        JOIN users u ON m.senderid = u.userid
+        WHERE m.conversationid = :cid
+        ORDER BY m.created_at ASC
+    """), {"cid": cid}).mappings().fetchall()
+
+    return render_template(
+        "inbox.html",
+        conversations=conversations,
+        messages=messages,
+        convo_id=cid,
+        show_chat_popup=False
+    )
+
+@app.route('/my_inbox')
+def my_inbox():
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    convo = conn.execute(text("""
+        SELECT conversationid
+        FROM conversation
+        WHERE customerid = :uid
+        ORDER BY created_at DESC
+        LIMIT 1
+    """), {"uid": uid}).mappings().fetchone()
+
+    if not convo:
+        return "No conversations yet"
+
+    return redirect(f"/inbox/{convo['conversationid']}")
+
+
+
+@app.route('/admin/inbox')
+def admin_inbox():
+
+    if session.get('role') != 'admin':
+        return redirect('/')
+
+    convo = conn.execute(text("""
+        SELECT conversationid
+        FROM conversation
+        ORDER BY conversationid DESC
+        LIMIT 1
+    """)).mappings().fetchone()
+
+    if not convo:
+        return "No conversations"
+
+    return redirect(f"/admin/chat/{convo['conversationid']}")
 
 if __name__ == '__main__':
     app.run(debug=True)

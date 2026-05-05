@@ -73,6 +73,12 @@
             <button type="submit" class="btn remove-btn">Remove</button>
         </form>
 
+        <form action="/start_chat/{{ p.vendorid }}" method="GET">
+            <button type="submit" class="message_vendor-btn">
+                Message Vendor
+            </button>
+        </form>
+
     </div>
     {% endfor %}
 

@@ -286,6 +286,25 @@
     background-color: #b94743;
 }
 
+
+.message_vendor-btn{
+    background-color: #4285F4;
+    color: white;
+    border-radius: 6px;
+
+}
+
+message_vendor_button:hover {
+    background-color: #3367d6;
+
+}
+
+
+
+
+
+
+
 /* review css */
 .reviewcard {
     width: 400px;
@@ -738,6 +757,7 @@
     cursor: pointer;
     transition: 0.2s;
 }
+
 
 
 

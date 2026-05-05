@@ -25,16 +25,20 @@
             <li><a href="/account">Account ({{ session['username'] }})</a></li>
             {% if session.get('user_id') and session.get('role') == 'admin' %}
                 <li><a href="/admin">Admin Panel</a></li>
+                <li></li><a href="/admin/inbox">Admin inbox</a></li>
             {% endif %}
             {% if session.get('user_id') and session.get('role') == 'vendor' %}
                 <li><a href="/vendor">Vendor Dashboard</a></li>
+                <li><a href="/vendor/inbox">Vendor Inbox</a></li>
             {% endif %}
+            <li><a href="/my_inbox">inbox</a></li>
             <li><a href="/return">returns</a></li>
             <li><a href="/logout">Logout</a></li>
         {% else %}
             <!-- User is NOT logged in -->
             <li><a href="/signup">Signup</a></li>
             <li><a href="/login">Login</a></li>
+
         {% endif %}
     </ul>
 </nav>
@@ -54,6 +58,8 @@
     </button>
 </div>
 {% endif %}
+
+{% if show_chat_popup %}
 
 <div id="chat-popup" class="chat-popup" style="display:none;">
     <div class="chat-header">
@@ -85,7 +91,7 @@
         <button type="submit">Send</button>
     </form>
 </div>
-
+{% endif %}
 
 </main>
 
