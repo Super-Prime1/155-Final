@@ -532,7 +532,7 @@ def admin_edit(table, item_id):
     }
 
     if table not in table_map:
-        return "Invalid table", 400
+        return render_template('admin.html', error="Invalid table")
 
     table_name, pk = table_map[table]
 
@@ -545,16 +545,36 @@ def admin_edit(table, item_id):
         """), {"id": item_id}).mappings().fetchone()
 
         if not row:
-            return "Row not found", 404
+            return render_template('admin.html', error="Row not found")
 
         return render_template("adminedit.html", table=table, row=row)
 
     # ---------------- POST ----------------
-    data = dict(request.form)
-    data.pop('id', None)
+    raw_data = dict(request.form)
+    raw_data.pop('id', None)
+
+    data = {}
+
+    def parse_int(value):
+        if value in (None, "", "None"):
+            return None
+        return int(value)
+
+    def parse_float(value):
+        if value in (None, "", "None"):
+            return None
+        return float(value)
+
+    for key, value in raw_data.items():
+        if key in ["price", "discountprice"]:
+            data[key] = parse_float(value)
+        elif key.endswith("id") or key in ["instock"]:
+            data[key] = parse_int(value)
+        else:
+            data[key] = value
 
     if not data:
-        return "No data provided", 400
+        return render_template('admin.html', error="No data provided")
 
     set_clause = ", ".join([f"{k} = :{k}" for k in data.keys()])
     data["id"] = item_id
@@ -604,6 +624,25 @@ def edit_discount_product(pid, did):
         "pid": pid,
         "did": did,
         "new_discountid": data.get("discountid", did)
+    })
+
+    conn.commit()
+
+    return redirect('/admin')
+
+
+@app.route('/admin/delete/discount_product/<int:pid>/<int:did>')
+def delete_discount_product(pid, did):
+
+    if 'role' not in session or session['role'] != 'admin':
+        return redirect('/')
+
+    conn.execute(text("""
+        DELETE FROM discount_products
+        WHERE productid = :pid AND discountid = :did
+    """), {
+        "pid": pid,
+        "did": did
     })
 
     conn.commit()
