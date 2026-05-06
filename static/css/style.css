@@ -1,3 +1,14 @@
+.colors{
+    /* Midnight Ocean / background-color: #0D0D2B;
+    / Deep Night Blue / background-color: #192A56;
+    / Phosphorescent Tide / background-color: #2C3A6E;
+    / Moonlit Water / background-color: #718093;
+    / Moon Foam */ background-color: #E8E8F4;
+}
+
+
+
+
 /* sign up css */
 .register.card {
     width: 500px;
@@ -1318,7 +1329,7 @@ transition: transform 0.2 ease;
 /* HERO */
 .hero{
     height: 60vh;
-    background: linear-gradient(to right, #4a90e2, #357bd8);
+    background: url("/static/images/hero2.png") center/cover no-repeat;
     color: white;
     display: flex;
     align-items: center;
@@ -1326,7 +1337,13 @@ transition: transform 0.2 ease;
     text-align: center;
     padding: 20px;
 }
-
+.hero-img {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+}
 .hero-text h1{
     font-size: 48px;
     margin-bottom: 10px;
