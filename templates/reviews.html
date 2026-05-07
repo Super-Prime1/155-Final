@@ -3,8 +3,9 @@
 {% block content %}
 
 <div class="review-page">
-<div class="reviewcard">
     <h1>Warning: bad reviews may be ink-cluded!</h1>
+<div class="reviewcard">
+    
     <div class="new_review">
     <form method="POST" action="/reviews">
         <label>product ID</label>
@@ -36,6 +37,8 @@
      </div>
 </div>
 
+
+<h1>Not all heroes wear socks… but they do review them.</h1>
 <div class="all_reviews">
     
         {%for r in reviews%}

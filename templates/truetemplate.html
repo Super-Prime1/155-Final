@@ -66,7 +66,7 @@
 <div id="chat-popup" class="chat-popup" style="display:none;">
     <div class="chat-header">
         <span>Support Chat</span>
-        <button onclick="toggleChat()">X</button>
+        <button onclick="toggleChat()" id="chat_del">X</button>
     </div>
 
     <div class="chat-body" id="chat-box">
@@ -110,7 +110,9 @@
             <li><a href="/return">Returns</a></li>
             <li><a href="/support">Customer Support</a></li>
             <li><a href="/reviews">review</a></li>
+            {% if session.get('role') in ['admin', 'vendor'] %}
             <li><a href="/warranty">warranty</a></li>
+            {% endif %}
         </ul>
     </div>
 
@@ -124,10 +126,16 @@
 <script>
 function toggleChat() {
     const popup = document.getElementById("chat-popup");
-    const icon = document.getElementById("chafloat")
-    popup.style.display = popup.style.display === "block" ? "none" : "block";
-    chatfloat.style.display = chatfloat.style.display === "none" ? "block" : "none";
-}   
+    const floatBtn = document.getElementById("chatfloat");
+
+    if (popup.style.display === "none" || popup.style.display === "") {
+        popup.style.display = "flex";
+        floatBtn.style.display = "none";
+    } else {
+        popup.style.display = "none";
+        floatBtn.style.display = "flex";
+    }
+} 
 </script>
 
 

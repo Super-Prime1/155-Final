@@ -315,6 +315,7 @@
     background-color: #E8E8F4;
     min-height: 100vh;
     padding: 20px 0;
+    text-align: center;
 }
 .reviewcard label {
     display: block;
@@ -324,7 +325,7 @@
 .reviewcard {
     width: 50vw;
     height: auto;
-    margin: 40px auto;
+    margin: 60px auto;
     padding: 15px;
     background: #192A56;
     border: 1px solid #ccc;
@@ -1354,7 +1355,7 @@ width: 150px;
 height: 150px;
 border-radius: 50%;
 box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-transition: transform 0.2 ease;
+transition: transform 0.2s ease;
 }
 .chat-button img{
     height: 100%;
@@ -1384,28 +1385,49 @@ transition: transform 0.2 ease;
     right: 20px;
     width: 300px;
     height: 400px;
-    background: white;
-    border: 1px solid #ccc;
+    background: #E8E8F4;
     display: flex;
     flex-direction: column;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    border: none;
 }
-
+#chat_del {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+#chat_del:hover {
+    color: rgb(240, 129, 129);
+    transform: scale(1.2);
+}
 .chat-header {
-    background: #333;
+    background:#192A56;
     color: white;
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    margin: 0;
+    
 }
 
 .chat-body {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .chat-input {
     display: flex;
+    flex-shrink: 0;
+    border-top: 1px solid #ddd;
+    padding: 5px;
+    background-color: #2C3A6E;
+    margin-top: auto
 }
 
 .chat-input input {
@@ -1414,19 +1436,49 @@ transition: transform 0.2 ease;
 }
 
 .chat-input button {
-    padding: 5px 10px;
+    transition: transform 0.15s ease;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background-color: #2954ef;
+    color: white;
+}
+.chat-input button:hover{
+background-color: #456cfc;
 }
 
 .me {
-    text-align: right;
-    margin: 5px;
-    color: blue;
+    display: flex;
+    justify-content: flex-end;
+    margin: 6px;
+    color: #007bff;
 }
 
+.me div {
+    background: #0b4df2;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 15px 15px 0 15px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
 .them {
-    text-align: left;
-    margin: 5px;
+    display: flex;
+    justify-content: flex-start;
+    margin: 6px;
     color: green;
+}
+
+.them div {
+    background: #0f0fd7;
+    color: black;
+    padding: 8px 12px;
+    border-radius: 15px 15px 15px 0;
+    max-width: 70%;
+    word-wrap: break-word;
 }
 
 
@@ -1714,11 +1766,21 @@ transition: transform 0.2 ease;
 }
 
 /* --- Complaint Form Card --- */
+
+.return-page{
+    background-color: #E8E8F4;
+    min-height: 100vh;
+    padding: 20px 0;
+    text-align: center;
+}
+
+
+
 .complaint_card{
     width: 400px;
-    margin: 45px auto;
+    margin: 60px auto;
     padding: 25px;
-    background: #E8E8F4;
+    background:#192A56;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     color: white;
@@ -1794,7 +1856,7 @@ transition: transform 0.2 ease;
 
 /* --- Return Card --- */
 .return-card{
-    background: #E8E8F4;
+    background-color: #192A56;;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.08);
