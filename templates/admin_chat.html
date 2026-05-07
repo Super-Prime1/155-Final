@@ -13,7 +13,7 @@
                     {{ convo.username }}
                 </a>
                 <form method="POST" action="/conversation/delete/{{ convo.conversationid }}">
-                    <button type="submit">x</button>
+                    <button type="submit" id="chat_del">x</button>
                 </form>
             </div>
         {% endfor %}

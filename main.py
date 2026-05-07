@@ -1333,8 +1333,11 @@ def admin_chat(cid):
         SELECT c.conversationid, u.username
         FROM conversation c
         JOIN users u ON c.customerid = u.userid
+        WHERE c.adminid IS NULL OR c.adminid = :aid
         ORDER BY c.conversationid DESC
-    """)).mappings().fetchall()
+    """),{
+        "aid":session['user_id']
+    }).mappings().fetchall()
 
     messages = conn.execute(text("""
             select m.*,u.username as sender_name
@@ -1502,9 +1505,6 @@ def vendor_inbox():
     """), {
         "vid": session['user_id']
     }).mappings().fetchall()
-
-    if not conversations:
-        return "No conversations yet"
 
     return render_template("vendor_chat.html",
     conversations=conversations,messages=[],

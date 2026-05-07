@@ -1508,10 +1508,10 @@ background-color: #456cfc;
 /* chat admin page */
 .chat-wrapper {
     display: flex;
-    height: 80vh;
+    height: 100vh;
     border: 1px solid #ddd;
-    border-radius: 10px;
     overflow: hidden;
+    border: none; 
 }
 
 
@@ -1544,7 +1544,11 @@ background-color: #456cfc;
 .conversation{
     background: #E8E8F4;
     color: #0D0D2B;
-    border-radius: 5px
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
 }
 
 .chat-sidebar a:hover{
