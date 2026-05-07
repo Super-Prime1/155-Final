@@ -1454,7 +1454,7 @@ background-color: #456cfc;
     display: flex;
     flex-direction: column;
     margin: 6px;
-    margin-left: auto;   /* THIS pushes it right */
+    margin-left: auto;   
     background: #0b4df2;
     color: white;
     padding: 8px 12px;
@@ -1469,7 +1469,7 @@ background-color: #456cfc;
     display: flex;
     flex-direction: column;
     margin: 6px;
-    margin-right: auto;  /* THIS keeps it left */
+    margin-right: auto;  
     background: #6beb76;
     color: black;
     padding: 8px 12px;
