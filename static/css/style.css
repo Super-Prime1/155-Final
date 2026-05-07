@@ -228,22 +228,6 @@
     outline: none;
 }
 
-.product-card{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border: 1px solid #718093;
-    background-color: #f1eeee;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.product-card:hover{
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-}
 
 /* Title + price */
 .product-title{
@@ -1010,24 +994,166 @@
     font-style: italic;
 }
 
+/* DASHBOARD */
+
 .dashboard{
-    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #E8E8F4;
     margin: auto;
     padding: 20px;
 }
 
 .dashboard-header{
     display: flex;
+    color: #0D0D2B;
     flex-direction: column;
+    width: 100%;
     gap: 10px;
     margin-bottom: 30px;
 }
 
-.product-list{
-    list-style: none;
-    padding: 0;
+.dashboard .btn{
+    width: 35%;
 }
 
+.dashboard section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0D0D2B;
+    color: #E8E8F4;
+    width: 80%;
+    margin: 10px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.vendor-product-card{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    background-color: #E8E8F4;
+    color: #0D0D2B;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.product-list{
+    width: 80%;
+    color: #E8E8F4;
+    padding: 0;
+    max-width: 900px;
+}
+
+.product-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.product-actions .btn{
+    color: #E8E8F4;
+    margin: 10px;
+}
+.product-actions .btn-edit{
+    background-color: #d6a317;
+    text-decoration: none;
+}
+
+.product-actions .btn-delete{
+    background: red;
+    text-decoration: none;
+
+}
+
+/* --- Order List Container --- */
+.order-card{
+    list-style: none;
+    background: #E8E8F4;
+    color: #0D0D2B;
+    padding: 18px 22px;
+    margin: 15px 0;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.25s ease;
+}
+
+.order-list{
+    width: 80%;
+    padding: 0;
+    max-width: 900px;
+}
+
+/* Hover effect */
+.order-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* --- Order Info Section --- */
+.order-info{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-info span{
+    font-size: 15px;
+}
+
+.order-id{
+    font-weight: 700;
+    font-size: 17px;
+}
+
+.order-total{
+    font-weight: 600;
+}
+
+.order-status{
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* --- Order Actions --- */
+.order-actions{
+    background-color: #0D0D2B;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.order-actions .btn{
+    text-decoration: none;
+    color: #E8E8F4;
+}
+
+.btn-primary{
+    background: #0D0D2B;
+    color: #E8E8F4;
+    text-decoration: none;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-primary:hover{
+    background: #29296f;
+}
+
+
+
+/* SHOP */
 .product-card{
     display: flex;
     flex-direction: column;
@@ -1037,6 +1163,11 @@
     border: 1px solid #ddd;
     border-radius: 10px;
     margin-bottom: 10px;
+}
+
+.product-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 
 /* ===== PRODUCT FORM ===== */
@@ -1065,34 +1196,22 @@
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-.product-info{
+
+/* EDITPROD FORM */
+.form-container-bg{
     display: flex;
-    flex-direction: column;
-}
-
-.product-actions .btn{
-    margin-left: 10px;
-}
-
-.btn-delete{
-    color: white;
-    background: red;
-}
-
-.btn-edit{
-    background: #3498db;
-    color: white;
-}
-
-.btn-primary{
-    background: #b209b8;
-    color: white;
+    background-color: #E8E8F4;
+    justify-content: center;
+    align-items: center;
 }
 
 .form-container{
-    max-width: 600px;
-    margin: auto;
-    padding: 25px;
+    width: 65%;
+    color: #E8E8F4;
+    background-color: #0D0D2B;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px;
 }
 
 .form-title{
@@ -1129,23 +1248,16 @@ textarea{
     min-height: 100px;
 }
 
-.btn-primary{
-    background: #2ecc71;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.btn-primary:hover{
-    background: #27ae60;
-}
 
 .form-actions{
     display: flex;
     gap: 10px;
     margin-top: 10px;
+}
+
+.form-container .btn{
+    color: #0D0D2B;
+    background-color: #E8E8F4;
 }
 
 .btn-secondary{
@@ -1684,58 +1796,4 @@ transition: transform 0.2 ease;
     padding: 40px;
     font-size: 18px;
     color: #777;
-}
-
-/* --- Order List Container --- */
-.order-cardv{
-    list-style: none;
-    background: #ffffff;
-    padding: 18px 22px;
-    margin: 15px 0;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.25s ease;
-}
-
-/* Hover effect */
-.order-cardv:hover{
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-/* --- Order Info Section --- */
-.order-info{
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.order-info span{
-    font-size: 15px;
-    color: #333;
-}
-
-.order-id{
-    font-weight: 700;
-    font-size: 17px;
-    color: #222;
-}
-
-.order-total{
-    font-weight: 600;
-    color: #007bff;
-}
-
-.order-status{
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-/* --- Order Actions --- */
-.order-actions{
-    display: flex;
-    align-items: center;
 }
