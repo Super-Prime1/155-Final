@@ -1,10 +1,10 @@
 /* Main Colors */
 .colors{
     /* Midnight Ocean */ background-color: #0D0D2B;
-    /* Deep Night Blue */ background-color: #192A56;
-    /* Phosphorescent Tide */ background-color: #2C3A6E;
-    /* Moonlit Water */ background-color: #718093;
-    /* Moon Foam */ background-color: #E8E8F4;
+    / Deep Night Blue */ background-color: #192A56;
+    / Phosphorescent Tide */ background-color: #2C3A6E;
+    / Moonlit Water */ background-color: #718093;
+    / Moon Foam */ background-color: #E8E8F4;
 }
 
 /* Global styles */
@@ -311,23 +311,43 @@
 
 
 /* review css */
-.reviewcard {
-    width: 400px;
-    margin: 30px auto;
-    padding: 15px;
-    background: white;
-    border: 1px solid #ccc;
+.review-page{
+    background-color: #E8E8F4;
+    min-height: 100vh;
+    padding: 20px 0;
+}
+.reviewcard label {
+    display: block;
+    margin-top: 10px;
 }
 
+.reviewcard {
+    width: 50vw;
+    height: auto;
+    margin: 40px auto;
+    padding: 15px;
+    background: #192A56;
+    border: 1px solid #ccc;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.25s ease;
+}
+.reviewcard:hover{
+    transform: translateY(-8px) scale(1.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
 .reviewcard input,
 .reviewcard select {
-    width: 100%;
+    width: 70%;
     padding: 8px;
     margin: 8px 0;
+    
 }
 
 .reviewcard button {
-    width: 100%;
+    width: 70%;
     padding: 8px;
 }
 
@@ -337,10 +357,20 @@
 }
 
 .reviews {
-    background: white;
+    background: #192A56;
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
+    color: white;
+    transition: all 0.25s ease;
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.reviews:hover{
+    transform: translateY(-8px) scale(1.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 .reviews h3 {
@@ -351,10 +381,40 @@
     margin: 5px 0;
 }
 
-.delete_btn {
-    margin-top: 5px;
-    padding: 5px;
+.deletereview_btn {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+    background-color: red;
+    transition: background 0.25s ease;
 }
+.deletereview_btn:hover{
+    background:rgb(250, 92, 92);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+.review_btn{
+    background:#0338f8;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer; 
+    transition: background 0.25s ease;
+     
+}
+
+.review_btn:hover{
+background: #2954f1;
+transform: scale(1.05);
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); 
+}
+
+
+
+
 
 
 /* Admin Panel */
@@ -1656,13 +1716,19 @@ transition: transform 0.2 ease;
 /* --- Complaint Form Card --- */
 .complaint_card{
     width: 400px;
-    margin: 30px auto;
+    margin: 45px auto;
     padding: 25px;
     background: #E8E8F4;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: white;
+    transition: all 0.25s ease;
 }
 
+.complaint_card:hover{
+    transform: translateY(-8px) scale(1.2);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
 .complaint_card form{
     display: flex;
     flex-direction: column;
@@ -1671,7 +1737,7 @@ transition: transform 0.2 ease;
 
 .complaint_card label{
     font-weight: 600;
-    color: #333;
+    color: white;
 }
 
 .complaint_card input,
@@ -1696,7 +1762,7 @@ transition: transform 0.2 ease;
 }
 
 .complaint_card button:hover{
-    background: #005fcc;
+    background:  #2954f1;
 }
 
 
@@ -1705,7 +1771,7 @@ transition: transform 0.2 ease;
     text-align: center;
     margin-top: 40px;
     font-size: 28px;
-    color: #222;
+    color: white;
 }
 
 .returns-container{
@@ -1715,7 +1781,15 @@ transition: transform 0.2 ease;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
+    transition: all 0.25s ease;
 }
+
+.return-card:hover{
+    transform: translateY(-8px) scale(1.2);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+
 
 
 /* --- Return Card --- */
@@ -1727,6 +1801,9 @@ transition: transform 0.2 ease;
     display: flex;
     flex-direction: column;
     gap: 15px;
+    color: white;
+    transition: all 0.25s ease;
+    margin: 30px;
 }
 
 .return-header{
@@ -1738,7 +1815,7 @@ transition: transform 0.2 ease;
 .return-header h3{
     margin: 0;
     font-size: 20px;
-    color: #333;
+    color: white;
 }
 
 /* --- Status Badge --- */
@@ -1768,7 +1845,7 @@ transition: transform 0.2 ease;
     background: #5cb85c;
 }
 
-.return-status.rejected{
+.return-status.denied{
     background: #d9534f;
 }
 
@@ -1781,12 +1858,12 @@ transition: transform 0.2 ease;
 
 .return-item label{
     font-weight: 600;
-    color: #555;
+    color: white;
 }
 
 .return-item p{
     margin: 4px 0 0 0;
-    color: #333;
+    color:white;
 }
 
 
@@ -1795,5 +1872,178 @@ transition: transform 0.2 ease;
     text-align: center;
     padding: 40px;
     font-size: 18px;
+    color: black
+}
+
+
+
+
+
+/* --- Order List Container --- */
+.order-cardv{
+    list-style: none;
+    background: #ffffff;
+    padding: 18px 22px;
+    margin: 15px 0;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.25s ease;
+}
+
+/* Hover effect */
+.order-cardv:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* --- Order Info Section --- */
+.order-info{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-info span{
+    font-size: 15px;
+    color: #333;
+}
+
+.order-id{
+    font-weight: 700;
+    font-size: 17px;
+    color: #222;
+}
+
+.order-total{
+    font-weight: 600;
+    color: #007bff;
+}
+
+.order-status{
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* --- Order Actions --- */
+.order-actions{
+    display: flex;
+    align-items: center;
+}
+
+
+/* WARRANTY PAGE */
+.warranty-page-bg{
+    background-color: #E8E8F4;
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.check_warranty{
+    background: #192A56;
+    color: #E8E8F4;
+    padding: 20px;
+    border-radius: 12px;
+    width: 75vw;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+.check_warranty:hover{
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.check_warranty form{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
+
+.check_warranty input{
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+.check_warranty button{
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #2C3A6E;
+    color: #E8E8F4;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.check_warranty button:hover{
+    background: #1e284d;
+}
+
+
+.warranty_results{
+    background: #c8d0e3;
+    color: #E8E8F4;
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.warranty_results h3{
+    margin-bottom: 10px;
+}
+
+
+
+
+.warranty_create{
+    background: #0D0D2B;
+    color: #E8E8F4;
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.warrenty_create form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.warrenty_create input{
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+.warrenty_create button{
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #4f46e5;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.warrenty_create button:hover{
+    background: #4338ca;
+}
+
+
+
     color: #777;
 }

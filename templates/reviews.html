@@ -2,23 +2,11 @@
 
 {% block content %}
 
-
+<div class="review-page">
 <div class="reviewcard">
     <h1>Warning: bad reviews may be ink-cluded!</h1>
-    <div class="review_top">
-    <form method="GET" action="/reviews">
-            <label> filter reviews!</label>
-            <select name="filter_by">
-                <option value="newest">newest</option>
-                <option value="oldest">oldest</option>
-                <option value="rating">rating</option>
-            </select>
-            <button type="submit">filter</button>
-        </form>
-     </div>
-    
-
-        <form method="POST" action="/reviews">
+    <div class="new_review">
+    <form method="POST" action="/reviews">
         <label>product ID</label>
         <input type="number" name="productid" placeholder="enter your product ID!">
         <label>comment</label>
@@ -31,8 +19,21 @@
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
-        <button type="submit">submit</button>
+        <button type="submit" class="review_btn" >submit</button>
     </form>
+    </div>
+
+    <div class="review_top">
+    <form method="GET" action="/reviews">
+            <label> filter reviews!</label>
+            <select name="filter_by">
+                <option value="newest">newest</option>
+                <option value="oldest">oldest</option>
+                <option value="rating">rating</option>
+            </select>
+            <button type="submit" class="review_btn">filter</button>
+        </form>
+     </div>
 </div>
 
 <div class="all_reviews">
@@ -47,19 +48,16 @@
                 🦑 
                 {% endfor %}
             </p>
-
+            {% if session.get('role') == 'admin' %}
             <form method="post" action="/delete_review/{{r.reviewid}}">
-            <button type="submit" class="delte_btn">delete</button>
+            <button type="submit" class="deletereview_btn">delete</button>
             </form>
-
+            {% endif%}
         </div>
         {% endfor %}
 </div>
 
-
-
-
-
-
+</div>
+    
 
 {% endblock %}

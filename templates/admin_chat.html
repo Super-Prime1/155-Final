@@ -12,6 +12,9 @@
                 <a href="/admin/chat/{{ convo.conversationid }}">
                     {{ convo.username }}
                 </a>
+                <form method="POST" action="/conversation/delete/{{ convo.conversationid }}">
+                    <button type="submit">x</button>
+                </form>
             </div>
         {% endfor %}
     </div>
