@@ -1,16 +1,20 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
+<div class="warranty-page-bg">
 
-<h2>Check Warranty</h2>
-
+<div class="check_warranty">
 <form method="POST">
+    <h2>Check Warranty</h2>
     <input type="hidden" name="action" value="check">
     <label>Order ID</label>
     <input type="number" name="order_id" required>
     <button type="submit">Check</button>
 </form>
+</div>
 
+
+<div class="warranty_results">
 {% if result %}
 
     <h3>Result</h3>
@@ -34,7 +38,13 @@
     {% endif %}
 
 {% endif %}
-<div class="warrenty_create">
+</div>
+
+
+{% if session.get('role') in ['admin', 'vendor'] %}
+
+    <h2>warranty create</h2>
+<div class="warranty_create">
     <form method="POST">
     <h2>warranty create</h2>
     <input type="hidden" name="action" value="create">
@@ -43,4 +53,8 @@
     <button type="submit">submit</button>
     </form>
 </div>
+{% endif %}
+
+</div>
+
 {% endblock %}

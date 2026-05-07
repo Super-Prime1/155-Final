@@ -1608,5 +1608,47 @@ def admin_inbox():
 
     return redirect(f"/admin/chat/{convo['conversationid']}")
 
+
+@app.route('/conversation/delete/<int:cid>', methods=['POST'])
+def delete_my_conversation(cid):
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    uid = session['user_id']
+
+    convo = conn.execute(text("""
+        SELECT *
+        FROM conversation
+        WHERE conversationid = :cid
+        AND (
+            customerid = :uid
+            OR vendorid = :uid
+            OR adminid = :uid
+        )
+    """), {
+        "cid": cid,
+        "uid": uid
+    }).mappings().fetchone()
+
+    conn.execute(text("""
+        DELETE FROM message
+        WHERE conversationid = :cid
+    """), {"cid": cid})
+    
+    conn.execute(text("""
+        DELETE FROM conversation
+        WHERE conversationid = :cid
+    """), {"cid": cid})
+
+    conn.commit()
+
+    return redirect(request.referrer or '/')
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

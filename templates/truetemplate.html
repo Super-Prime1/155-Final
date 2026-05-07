@@ -31,7 +31,9 @@
                 <li><a href="/vendor">Vendor Dashboard</a></li>
                 <li><a href="/vendor/inbox">Vendor Inbox</a></li>
             {% endif %}
+            {% if session.get('user_id') and session.get('role') == 'customer' %}
             <li><a href="/my_inbox">inbox</a></li>
+            {% endif %}
             <li><a href="/return">returns</a></li>
             <li><a href="/logout">Logout</a></li>
         {% else %}
