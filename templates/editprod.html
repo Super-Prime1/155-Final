@@ -1,71 +1,75 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<div class="form-container">
-    <h2 class="form-title">Edit Product</h2>
+<div class="form-container-bg">
+    <div class="form-container">
+        <h2 class="form-title">Edit Product</h2>
 
-    <form action="/editprod/{{ product.productid }}" method="POST" class="product-form">
+        <form action="/editprod/{{ product.productid }}" method="POST" class="product-form">
 
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input id="title" type="text" name="title" value="{{ product.title }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" required>{{ product.description }}</textarea>
-        </div>
-
-        <div class="form-row">
             <div class="form-group">
-                <label for="price">Price</label>
-                <input id="price" type="number" step="0.01" name="price" value="{{ product.price }}" required>
+                <label for="title">Title</label>
+                <input id="title" type="text" name="title" value="{{ product.title }}" required>
             </div>
 
             <div class="form-group">
-                <label for="instock">Stock</label>
-                <input id="instock" type="number" name="instock" value="{{ product.instock }}" required>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required>{{ product.description }}</textarea>
             </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="color">Color</label>
-            <select id="color" name="colorid">
-                {% for c in colors %}
-                    <option value="{{ c.colorid }}"
-                        {% if c.colorid == product.colorid %}selected{% endif %}>
-                        {{ c.colorname }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for="size">Size</label>
-            <select id="size" name="size">
-                <option value="extra small" {% if product.size == 'extra small' %}selected{% endif %}>Extra Small</option>
-                <option value="small" {% if product.size == 'small' %}selected{% endif %}>Small</option>
-                <option value="medium" {% if product.size == 'medium' %}selected{% endif %}>Medium</option>
-                <option value="large" {% if product.size == 'large' %}selected{% endif %}>Large</option>
-                <option value="extra large" {% if product.size == 'extra large' %}selected{% endif %}>Extra Large</option>
-            </select>
-        </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input id="price" type="number" step="0.01" name="price" value="{{ product.price }}" required>
+                </div>
 
-        <div class="form-group">
-            <label for="warrantyid">Warranty ID</label>
-            <input id="warrantyid" type="number" name="warrantyid" value="{{ product.warrantyid }}">
-        </div>
+                <div class="form-group">
+                    <label for="instock">Stock</label>
+                    <input id="instock" type="number" name="instock" value="{{ product.instock }}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="color">Color</label>
+                <select id="color" name="colorid">
+                    {% for c in colors %}
+                        <option value="{{ c.colorid }}"
+                            {% if c.colorid == product.colorid %}selected{% endif %}>
+                            {{ c.colorname }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="image">Image URL</label>
-            <input id="image" type="text" name="image" value="{{ product.image }}">
-        </div>
+            <div class="form-group">
+                <label for="size">Size</label>
+                <select id="size" name="sizeid">
+                    {% for s in sizes %}
+                        <option value="{{ s.sizeid }}"
+                            {% if s.sizeid == product.sizeid %}selected{% endif %}>
+                            {{ s.sizename }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a href="/dashboard" class="btn btn-secondary">Cancel</a>
-        </div>
 
-    </form>
+            <div class="form-group">
+                <label for="warrantyid">Warranty ID</label>
+                <input id="warrantyid" type="number" name="warrantyid" value="{{ product.warrantyid }}">
+            </div>
+
+            <div class="form-group">
+                <label for="image">Image URL</label>
+                <input id="image" type="text" name="image" value="{{ product.image }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+            </div>
+
+        </form>
+    </div>
 </div>
 {% endblock %}

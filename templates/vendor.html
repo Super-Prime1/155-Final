@@ -16,10 +16,10 @@
 
         <ul class="product-list">
             {% for product in products %}
-                <li class="product-cardv">
+                <li class="vendor-product-card">
                     <div class="product-info">
-                        <span class="product-title">{{ product.title }}</span>
-                        <span class="product-price">
+                        <span class="vendor-product-title">{{ product.title }}</span>
+                        <span class="vendor-product-price">
                             ${{ "%.2f"|format(product.price) }}
                         </span>
                     </div>
@@ -39,7 +39,7 @@
         <h3 class="section-title">Orders for My Products</h3>
         <ul class="order-list">
             {% for order in orders %}
-                <li class="order-cardv">
+                <li class="order-card">
                     <div class="order-info">
                         <span class="order-id">Order #{{ order.orderid }}</span>
                         <span class="order-total">
