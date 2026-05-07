@@ -1,68 +1,70 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<div class="form-container">
-    <h2 class="form-title">Add Product</h2>
+<div class="form-container-bg">
+    <div class="form-container">
+        <h2 class="form-title">Add Product</h2>
 
-    <form action="/addprod" method="POST" class="product-form">
+        <form action="/addprod" method="POST" class="product-form">
 
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input id="title" type="text" name="title" required>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" required></textarea>
-        </div>
-
-        <div class="form-row">
             <div class="form-group">
-                <label for="price">Price</label>
-                <input id="price" type="number" step="0.01" name="price" required>
+                <label for="title">Title</label>
+                <input id="title" type="text" name="title" required>
             </div>
 
             <div class="form-group">
-                <label for="instock">Stock</label>
-                <input id="instock" type="number" name="instock" required>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
             </div>
-        </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input id="price" type="number" step="0.01" name="price" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="instock">Stock</label>
+                    <input id="instock" type="number" name="instock" required>
+                </div>
+            </div>
 
 
-        <div class="form-group">
-            <label for="colorid">Color</label>
-            <select id="colorid" name="colorid" required>
-                {% for color in colors %}
-                    <option value="{{ color.colorid }}">{{ color.colorname }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="colorid">Color</label>
+                <select id="colorid" name="colorid" required>
+                    {% for color in colors %}
+                        <option value="{{ color.colorid }}">{{ color.colorname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
 
-        <div class="form-group">
-            <label for="size">Size</label>
-            <select id="size" name="size">
-                <option value="extra small">Extra Small</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-                <option value="extra large">Extra Large</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="size">Size</label>
+                <select id="size" name="size">
+                    <option value="extra small">Extra Small</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="extra large">Extra Large</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="warrantyid">Warranty ID</label>
-            <input id="warrantyid" type="number" name="warrantyid">
-        </div>
+            <div class="form-group">
+                <label for="warrantyid">Warranty ID</label>
+                <input id="warrantyid" type="number" name="warrantyid">
+            </div>
 
-        <div class="form-group">
-            <label for="image">Image URL</label>
-            <input id="image" type="text" name="image">
-        </div>
+            <div class="form-group">
+                <label for="image">Image URL</label>
+                <input id="image" type="text" name="image">
+            </div>
 
 
 
-        <button type="submit" class="btn btn-primary">Add Product</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

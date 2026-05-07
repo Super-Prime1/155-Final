@@ -217,8 +217,7 @@ def shop():
         product_id = request.form.get('product_id')
         action = request.form.get('action')
 
-        # (optional inputs from form)
-        size = request.form.get('size')
+        sizeid = request.form.get('sizeid')
         colorid = request.form.get('colorid')
 
         if not product_id:
@@ -693,10 +692,15 @@ def editprod(pid):
         SELECT colorid, colorname FROM color
     """)).fetchall()
 
+    sizes = conn.execute(text("""
+    SELECT sizeid, sizename FROM size
+    """)).fetchall()
+
+
     if not product:
         return "Product not found or not yours", 404
 
-    return render_template('editprod.html', product=product, colors=colors)
+    return render_template('editprod.html', product=product, colors=colors, sizes=sizes)
 
 
 @app.route('/editprod/<int:pid>', methods=['POST'])
@@ -711,7 +715,7 @@ def updateprod(pid):
             description = :description,
             price = :price,
             instock = :instock,
-            size = :size,
+            sizeid = :sizeid,
             warrantyid = :warrantyid,
             image = :image,
             colorid = :colorid
@@ -721,7 +725,7 @@ def updateprod(pid):
         "description": request.form['description'],
         "price": request.form['price'],
         "instock": request.form['instock'],
-        "size": request.form['size'],
+        "sizeid": request.form['sizeid'],
         "warrantyid": request.form['warrantyid'],
         "image": request.form['image'],
         "colorid": request.form['colorid'],  # 👈 ADD THIS
@@ -750,14 +754,14 @@ def saveprod():
 
     conn.execute(text("""
         INSERT INTO products 
-        (title, description, price, instock, size, warrantyid, image, vendorid, colorid)
-        VALUES (:title, :description, :price, :instock, :size, :warrantyid, :image, :vendorid, :colorid)
+        (title, description, price, instock, sizeid, warrantyid, image, vendorid, colorid)
+        VALUES (:title, :description, :price, :instock, :sizeid, :warrantyid, :image, :vendorid, :colorid)
     """), {
         "title": request.form['title'],
         "description": request.form['description'],
         "price": request.form['price'],
         "instock": request.form['instock'],
-        "size": request.form['size'],
+        "sizeid": request.form['sizeid'],
         "warrantyid": request.form['warrantyid'],
         "image": request.form['image'],
         "vendorid": session['user_id'],
