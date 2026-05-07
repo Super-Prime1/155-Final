@@ -6,10 +6,12 @@
 
 {% block content %}
 
-    <form action="/shop" method="GET" class="search-form">
-        <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}">
-        <button type="submit">Search</button>
-    </form>
+    <div class="shop-header">
+        <form action="/shop" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}">
+            <button class="btn" type="submit">Search</button>
+        </form>
+    </div>
 
 <div class="shop-container">
 
@@ -37,10 +39,7 @@
         </p>
 
         <!-- SINGLE FORM -->
-        <form action="/shop" method="POST">
-
-            <input type="hidden" name="product_id" value="{{ p.productid }}">
-            <input type="hidden" name="action" value="add">
+        <form class="prod-options" action="/shop" method="POST">
 
             <!-- SIZE -->
             <select name="size">
@@ -60,24 +59,30 @@
                 {% endfor %}
             </select>
 
-            <div class="product-buttons">
+        </form>
+
+        <div class="product-buttons">
+
+            <form action="/shop" method="POST">
                 <button type="submit" class="btn add-btn">Add to Cart</button>
-            </div>
+                <input type="hidden" name="product_id" value="{{ p.productid }}">
+                <input type="hidden" name="action" value="add">
+            </form>
 
-        </form>
+            
+                    <!-- REMOVE FORM  -->
+            <form action="/shop" method="POST">
+                <input type="hidden" name="product_id" value="{{ p.productid }}">
+                <input type="hidden" name="action" value="remove">
+                <button type="submit" class="btn remove-btn">Remove</button>
+            </form>
 
-        <!-- REMOVE FORM  -->
-        <form action="/shop" method="POST">
-            <input type="hidden" name="product_id" value="{{ p.productid }}">
-            <input type="hidden" name="action" value="remove">
-            <button type="submit" class="btn remove-btn">Remove</button>
-        </form>
-
-        <form action="/start_chat/{{ p.vendorid }}" method="GET">
-            <button type="submit" class="message_vendor-btn">
-                Message Vendor
-            </button>
-        </form>
+            <form action="/start_chat/{{ p.vendorid }}" method="GET">
+                <button type="submit" class="btn message_vendor-btn">
+                    Message Vendor
+                </button>
+            </form>
+        </div>
 
     </div>
     {% endfor %}

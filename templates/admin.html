@@ -1,196 +1,198 @@
 {% extends "truetemplate.html" %}
 
 {% block content %}
-<div class="admin-container">
+<div class="admin-container-bg">
+    <div class="admin-container">
 
-<h2>Admin Panel</h2>
-<p>Welcome, Admin!</p>
+    <h2>Admin Panel</h2>
+    <p>Welcome, Admin!</p>
 
-<form method="GET" action="/admin" class="admin-filter">
-    <label>Filter:</label>
-    <select name="section" onchange="this.form.submit()">
-        <option value="all" {% if filter_section == 'all' %}selected{% endif %}>Show All</option>
-        <option value="users" {% if filter_section == 'users' %}selected{% endif %}>Users</option>
-        <option value="products" {% if filter_section == 'products' %}selected{% endif %}>Products</option>
-        <option value="orders" {% if filter_section == 'orders' %}selected{% endif %}>Orders</option>
-        <option value="reviews" {% if filter_section == 'reviews' %}selected{% endif %}>Reviews</option>
-        <option value="returns" {% if filter_section == 'returns' %}selected{% endif %}>Returns</option>
-        <option value="warranties" {% if filter_section == 'warranties' %}selected{% endif %}>Warranties</option>
-        <option value="discounts" {% if filter_section == 'discounts' %}selected{% endif %}>Discounts</option>
-        <option value="messages" {% if filter_section == 'messages' %}selected{% endif %}>Messages</option>
-    </select>
-</form>
+    <form method="GET" action="/admin" class="admin-filter">
+        <label>Filter:</label>
+        <select name="section" onchange="this.form.submit()">
+            <option value="all" {% if filter_section == 'all' %}selected{% endif %}>Show All</option>
+            <option value="users" {% if filter_section == 'users' %}selected{% endif %}>Users</option>
+            <option value="products" {% if filter_section == 'products' %}selected{% endif %}>Products</option>
+            <option value="orders" {% if filter_section == 'orders' %}selected{% endif %}>Orders</option>
+            <option value="reviews" {% if filter_section == 'reviews' %}selected{% endif %}>Reviews</option>
+            <option value="returns" {% if filter_section == 'returns' %}selected{% endif %}>Returns</option>
+            <option value="warranties" {% if filter_section == 'warranties' %}selected{% endif %}>Warranties</option>
+            <option value="discounts" {% if filter_section == 'discounts' %}selected{% endif %}>Discounts</option>
+            <option value="messages" {% if filter_section == 'messages' %}selected{% endif %}>Messages</option>
+        </select>
+    </form>
 
-<hr>
+    <hr>
 
-{% if filter_section == 'all' or filter_section == 'users' %}
-<h3>All Users</h3>
-<ul class="admin-list">
-    {% for user in allusers %}
-    <li>
-        {{ user.name }} ({{ user.email }}) - {{ user.role }}
-        <a href="/admin/edit/user/{{ user.userid }}">Edit</a>
-        <a href="/admin/delete/user/{{ user.userid }}" onclick="return confirm('Delete user?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if filter_section == 'all' or filter_section == 'users' %}
+    <h3>All Users</h3>
+    <ul class="admin-list">
+        {% for user in allusers %}
+        <li>
+            {{ user.name }} ({{ user.email }}) - {{ user.role }}
+            <a href="/admin/edit/user/{{ user.userid }}">Edit</a>
+            <a href="/admin/delete/user/{{ user.userid }}" onclick="return confirm('Delete user?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'products' %}
-<h3>All Products</h3>
-<ul class="admin-list">
-    {% for product in allproducts %}
-    <li>
-        {{ product.title }} - ${{ "%.2f"|format(product.price) }}
-        <a href="/admin/edit/product/{{ product.productid }}">Edit</a>
-        <a href="/deleteprod/{{ product.productid }}" onclick="return confirm('Delete product?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if filter_section == 'all' or filter_section == 'products' %}
+    <h3>All Products</h3>
+    <ul class="admin-list">
+        {% for product in allproducts %}
+        <li>
+            {{ product.title }} - ${{ "%.2f"|format(product.price) }}
+            <a href="/admin/edit/product/{{ product.productid }}">Edit</a>
+            <a href="/deleteprod/{{ product.productid }}" onclick="return confirm('Delete product?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'orders' %}
-<h3>All Orders</h3>
-<ul class="admin-list">
-    {% for order in allorders %}
-    <li>
-        Order ID: {{ order.orderid }} - Total: ${{ "%.2f"|format(order.total) }} - Status: {{ order.orderstatus }}
-        <a href="/admin/edit/order/{{ order.orderid }}">Edit</a>
-        <a href="/admin/delete/order/{{ order.orderid }}" onclick="return confirm('Delete order?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if filter_section == 'all' or filter_section == 'orders' %}
+    <h3>All Orders</h3>
+    <ul class="admin-list">
+        {% for order in allorders %}
+        <li>
+            Order ID: {{ order.orderid }} - Total: ${{ "%.2f"|format(order.total) }} - Status: {{ order.orderstatus }}
+            <a href="/admin/edit/order/{{ order.orderid }}">Edit</a>
+            <a href="/admin/delete/order/{{ order.orderid }}" onclick="return confirm('Delete order?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'reviews' %}
-<h3>All Reviews</h3>
-<ul class="admin-list">
-    {% for review in allreviews %}
-    <li>
-        Review ID: {{ review.reviewid }} - Rating: {{ review.rating }}
-        <a href="/admin/edit/review/{{ review.reviewid }}">Edit</a>
-        <a href="/admin/delete/review/{{ review.reviewid }}" onclick="return confirm('Delete review?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if filter_section == 'all' or filter_section == 'reviews' %}
+    <h3>All Reviews</h3>
+    <ul class="admin-list">
+        {% for review in allreviews %}
+        <li>
+            Review ID: {{ review.reviewid }} - Rating: {{ review.rating }}
+            <a href="/admin/edit/review/{{ review.reviewid }}">Edit</a>
+            <a href="/admin/delete/review/{{ review.reviewid }}" onclick="return confirm('Delete review?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'returns' %}
-<h3>All Returns</h3>
+    {% if filter_section == 'all' or filter_section == 'returns' %}
+    <h3>All Returns</h3>
 
-<h4>Pending Returns</h4>
-<ul class="admin-list">
-    {% for r in pending_returns %}
-    <li>
-        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
-        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
-        <a href="/return/approve/{{ r.returnid }}">Approve</a>
-        <a href="/return/deny/{{ r.returnid }}">Deny</a>
-        <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
+    <h4>Pending Returns</h4>
+    <ul class="admin-list">
+        {% for r in pending_returns %}
+        <li>
+            Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+            <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+            <a href="/return/approve/{{ r.returnid }}">Approve</a>
+            <a href="/return/deny/{{ r.returnid }}">Deny</a>
+            <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
 
-<h4>Approved Returns</h4>
-<ul class="admin-list">
-    {% for r in approved_returns %}
-    <li>
-        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
-        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
-        <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
+    <h4>Approved Returns</h4>
+    <ul class="admin-list">
+        {% for r in approved_returns %}
+        <li>
+            Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+            <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+            <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
 
-<h4>Denied Returns</h4>
-<ul class="admin-list">
-    {% for r in denied_returns %}
-    <li>
-        Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
-        <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
-        <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <h4>Denied Returns</h4>
+    <ul class="admin-list">
+        {% for r in denied_returns %}
+        <li>
+            Return ID: {{ r.returnid }} - {{ r.title }} - Status: {{ r.status }}
+            <a href="/admin/edit/return/{{ r.returnid }}">Edit</a>
+            <a href="/admin/delete/return/{{ r.returnid }}" onclick="return confirm('Delete return?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'warranties' %}
-<h3>All Warranties</h3>
+    {% if filter_section == 'all' or filter_section == 'warranties' %}
+    <h3>All Warranties</h3>
 
-<h3>Add Warranty</h3>
-<form method="POST" action="/admin/add_warranty">
-    <input type="date" name="expire_date" required>
-    <button type="submit">Create Warranty</button>
-</form>
+    <h3>Add Warranty</h3>
+    <form method="POST" action="/admin/add_warranty">
+        <input type="date" name="expire_date" required>
+        <button type="submit">Create Warranty</button>
+    </form>
 
-<ul class="admin-list">
-    {% for warranty in allwarranties %}
-    <li>
-        Warranty ID: {{ warranty.warrantyid }} - Expires: {{ warranty.expire_date }}
-        <a href="/admin/edit/warranty/{{ warranty.warrantyid }}">Edit</a>
-        <a href="/admin/delete/warranty/{{ warranty.warrantyid }}" onclick="return confirm('Delete warranty?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <ul class="admin-list">
+        {% for warranty in allwarranties %}
+        <li>
+            Warranty ID: {{ warranty.warrantyid }} - Expires: {{ warranty.expire_date }}
+            <a href="/admin/edit/warranty/{{ warranty.warrantyid }}">Edit</a>
+            <a href="/admin/delete/warranty/{{ warranty.warrantyid }}" onclick="return confirm('Delete warranty?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'discounts' %}
-<h3>All Discounts</h3>
+    {% if filter_section == 'all' or filter_section == 'discounts' %}
+    <h3>All Discounts</h3>
 
-<h3>Add Discount</h3>
-<form method="POST" action="/admin/add_discount">
-    <input type="date" name="length" required>
-    <input type="number" step="0.01" name="discountprice" placeholder="Discount Price" required>
-    <input type="number" step="0.01" name="price" placeholder="Original Price" required>
-    <button type="submit">Create Discount</button>
-</form>
+    <h3>Add Discount</h3>
+    <form method="POST" action="/admin/add_discount">
+        <input type="date" name="length" required>
+        <input type="number" step="0.01" name="discountprice" placeholder="Discount Price" required>
+        <input type="number" step="0.01" name="price" placeholder="Original Price" required>
+        <button type="submit">Create Discount</button>
+    </form>
 
-<ul class="admin-list">
-    {% for discount in alldiscounts %}
-    <li>
-        Discount ID: {{ discount.discountid }} - Price: {{ discount.discountprice }}
-        <a href="/admin/edit/discount/{{ discount.discountid }}">Edit</a>
-        <a href="/admin/delete/discount/{{ discount.discountid }}" onclick="return confirm('Delete discount?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <ul class="admin-list">
+        {% for discount in alldiscounts %}
+        <li>
+            Discount ID: {{ discount.discountid }} - Price: {{ discount.discountprice }}
+            <a href="/admin/edit/discount/{{ discount.discountid }}">Edit</a>
+            <a href="/admin/delete/discount/{{ discount.discountid }}" onclick="return confirm('Delete discount?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if filter_section == 'all' or filter_section == 'discounts' %}
-<h3>All Discounted Products</h3>
+    {% if filter_section == 'all' or filter_section == 'discounts' %}
+    <h3>All Discounted Products</h3>
 
-<h3>Apply Discount to Product</h3>
-<form method="POST" action="/admin/link_discount">
-    <input type="number" name="productid" placeholder="Product ID" required>
-    <input type="number" name="discountid" placeholder="Discount ID" required>
-    <button type="submit">Apply</button>
-</form>
+    <h3>Apply Discount to Product</h3>
+    <form method="POST" action="/admin/link_discount">
+        <input type="number" name="productid" placeholder="Product ID" required>
+        <input type="number" name="discountid" placeholder="Discount ID" required>
+        <button type="submit">Apply</button>
+    </form>
 
-<ul class="admin-list">
-    {% for dp in alldiscountproducts %}
-    <li>
-        Product ID: {{ dp.productid }} - Discount ID: {{ dp.discountid }}
-        <a href="/admin/edit/discount_product/{{ dp.productid }}/{{ dp.discountid }}">Edit</a>
-        <a href="/admin/delete/discount_product/{{ dp.productid }}/{{ dp.discountid }}" onclick="return confirm('Delete link?')">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <ul class="admin-list">
+        {% for dp in alldiscountproducts %}
+        <li>
+            Product ID: {{ dp.productid }} - Discount ID: {{ dp.discountid }}
+            <a href="/admin/edit/discount_product/{{ dp.productid }}/{{ dp.discountid }}">Edit</a>
+            <a href="/admin/delete/discount_product/{{ dp.productid }}/{{ dp.discountid }}" onclick="return confirm('Delete link?')">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-  
-{% if filter_section == 'all' or filter_section == 'messages' %}
-<h3>Customer Messages</h3>
+    
+    {% if filter_section == 'all' or filter_section == 'messages' %}
+    <h3>Customer Messages</h3>
 
-<ul class="admin-list">
-    {% for convo in conversations %}
-    <li>
-        User ID: {{ convo.customerid }}
-        <a href="/admin/chat/{{ convo.conversationid }}">Open Chat</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <ul class="admin-list">
+        {% for convo in conversations %}
+        <li>
+            User ID: {{ convo.customerid }}
+            <a href="/admin/chat/{{ convo.conversationid }}">Open Chat</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
 
+    </div>
 </div>
 {% endblock %}
