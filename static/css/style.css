@@ -1470,34 +1470,37 @@ background-color: #456cfc;
 
 .me {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     margin: 6px;
-    color: #007bff;
-}
-
-.me div {
+    margin-left: auto;   
     background: #0b4df2;
     color: white;
     padding: 8px 12px;
     border-radius: 15px 15px 0 15px;
     max-width: 70%;
-    word-wrap: break-word;
-}
-.them {
-    display: flex;
-    justify-content: flex-start;
-    margin: 6px;
-    color: green;
+    text-align: right;
+    
 }
 
-.them div {
-    background: #0f0fd7;
+
+.them {
+    display: flex;
+    flex-direction: column;
+    margin: 6px;
+    margin-right: auto;  
+    background: #6beb76;
     color: black;
     padding: 8px 12px;
     border-radius: 15px 15px 15px 0;
     max-width: 70%;
-    word-wrap: break-word;
+    
 }
+.me p,
+.them p {
+    margin: 0;
+}
+
+
 
 
 
