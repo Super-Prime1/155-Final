@@ -74,13 +74,13 @@
         {% for msg in messages %}
             {% if msg.senderid == session['user_id'] %}
                 <div class="me">
-                    <strong>{{ session['username'] }}</strong><br>
-                    {{ msg.content }}
+                    <strong>{{ session['username'] }}</strong>
+                    <p>{{ msg.content }}</p>
                 </div>
             {% else %}
                 <div class="them">
-                    <strong>Admin</strong><br>
-                    {{ msg.content }}
+                    <strong>Admin</strong>
+                    <p>{{ msg.content }}</p>
                 </div>
             {% endif %}
         {% endfor %}
