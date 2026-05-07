@@ -9,9 +9,14 @@
         <h3>Inbox</h3>
 
         {% for convo in conversations %}
+        <div class="conversation">
             <a href="/inbox/{{ convo.conversationid }}">
                 {{ convo.username }}
             </a>
+            <form method="POST" action="/conversation/delete/{{ convo.conversationid }}">
+                <button type="submit" id="chat_del">x</button>
+            </form>
+        </div>
         {% endfor %}
     </div>
 
