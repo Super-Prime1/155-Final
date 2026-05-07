@@ -1,10 +1,10 @@
 /* Main Colors */
 .colors{
     /* Midnight Ocean */ background-color: #0D0D2B;
-    / Deep Night Blue */ background-color: #192A56;
-    / Phosphorescent Tide */ background-color: #2C3A6E;
-    / Moonlit Water */ background-color: #718093;
-    / Moon Foam */ background-color: #E8E8F4;
+    /* Deep Night Blue */ background-color: #192A56;
+    /* Phosphorescent Tide */ background-color: #2C3A6E;
+    /* Moonlit Water */ background-color: #718093;
+    /* Moon Foam */ background-color: #E8E8F4;
 }
 
 /* Global styles */
@@ -85,29 +85,39 @@
 
 
 /* header css */
-.header {
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 10px 20px;
-    background-color: #E8E8F4;
-    border-bottom: 2px solid #718093;
+    background-color: #718093;
+    border-bottom: 2px solid #0D0D2B;
     text-align: center;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.logo-area {
+.logo{
+    margin: 0;
+}
+
+.logo-area{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    color: #192A56
 }
 
-.logo img {
-    width: 200px;
+.logo img{
+    width: 150px;
     height: auto;
 }
 
-.nav ul {
+.nav ul{
     list-style: none;
     display: flex;
     gap: 15px;
@@ -115,70 +125,77 @@
     padding: 0;
 }
 
-.nav a {
+.nav a{
     text-decoration: none;
-    color: #192A56;
-    font-size: 14px;
-    transition: transform .03 ease;
+    color: #E8E8F4;
+    background-color: #192A56;
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-size: 15px;
+
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.nav a:hover {
-    color: #000000;
+.nav a:hover{
+    color: #b9b9c5;
+    background-color: #1a1a3d;
+    transform: scale(1.05);
 }
+
 
 
 /* footer */
-.footer {
+.footer{
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     padding: 20px;
-    background-color: #E8E8F4;
-        border-top: 2px solid #718093;
-        text-align: left;
+    background-color: #718093;
+    color: #E8E8F4;
+    border-top: 2px solid #0D0D2B;
+    text-align: left;
 }
 
-.footer-left {
+.footer-left{
     flex: 1;
 }
 
-.footer-left h3 {
+.footer-left h3{
     margin: 0;
 }
 
-.footer-left p {
+.footer-left p{
     margin: 5px 0 0 0;
-    color: #0D0D2B;
 }
 
-.footer-links {
+.footer-links{
     flex: 1;
     text-align: center;
 }
 
-.footer-links ul {
+.footer-links ul{
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.footer-links li {
+.footer-links li{
     margin: 5px 0;
 }
 
-.footer-links a {
+.footer-links a{
     text-decoration: none;
-    color: #0D0D2B;
+    color: #E8E8F4;
 }
 
-.footer-links a:hover {
-    color: #000000;
+.footer-links a:hover{
+    color: #E8E8F4;
 }
 
-.footer-copy {
+.footer-copy{
     flex: 1;
     text-align: right;
-    color: #0D0D2B;
+    color: #E8E8F4;
 }
 
 
@@ -749,6 +766,7 @@ box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     background-color: #E8E8F4;
     padding: 20px;
     color: #E8E8F4;
+    min-height:52.90vh;
 }
 
 .cart-title{
@@ -2105,7 +2123,3 @@ background-color: #456cfc;
     background: #4338ca;
 }
 
-
-
-    color: #777;
-}

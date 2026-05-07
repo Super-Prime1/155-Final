@@ -10,15 +10,13 @@
     <header class="header">
     <div class="logo-area">
         <h1 class="logo"> <img src="/static/images/Socktopus_logo.png" alt="Socktopus Logo"></h1>
-        <h1 class="tagline">Eight arms. Endless socks.</h1>
     </div>
 
 <nav class="nav">
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/shop">Shop</a></li>
-        <li><a href="/cart">
-  <img src="/static/images/funny cart doodle.png" alt="Cart" style="width:50px; height:auto;"></a></li>
+        <li><a href="/cart">Cart</a></li>
 
         {% if session.get('user_id') %}
             <!-- User is logged in -->
