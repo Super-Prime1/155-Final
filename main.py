@@ -742,8 +742,18 @@ def addprod():
 
     if 'role' not in session or session['role'] != 'vendor':
         return redirect('/')
+    
+    colors = conn.execute(text("""
+    SELECT colorid, colorname
+    FROM color
+    """)).fetchall()
 
-    return render_template("addprod.html")
+    sizes = conn.execute(text("""
+    SELECT sizeid, sizename
+    FROM size
+    """)).fetchall()
+
+    return render_template("addprod.html", colors=colors, sizes=sizes)
 
 
 @app.route('/addprod', methods=['POST'])
