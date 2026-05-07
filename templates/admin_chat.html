@@ -8,9 +8,11 @@
         <h3>Inbox</h3>
 
         {% for convo in conversations %}
-            <a href="/admin/chat/{{ convo.conversationid }}">
-                {{ convo.username }}
-            </a>
+            <div class="conversation">
+                <a href="/admin/chat/{{ convo.conversationid }}">
+                    {{ convo.username }}
+                </a>
+            </div>
         {% endfor %}
     </div>
 

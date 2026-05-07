@@ -25,7 +25,7 @@
             <li><a href="/account">Account ({{ session['username'] }})</a></li>
             {% if session.get('user_id') and session.get('role') == 'admin' %}
                 <li><a href="/admin">Admin Panel</a></li>
-                <li></li><a href="/admin/inbox">Admin inbox</a></li>
+                <li><a href="/admin/inbox">Admin inbox</a></li>
             {% endif %}
             {% if session.get('user_id') and session.get('role') == 'vendor' %}
                 <li><a href="/vendor">Vendor Dashboard</a></li>
