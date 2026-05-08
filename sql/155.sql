@@ -105,7 +105,7 @@ CREATE TABLE `discount_products` (
    `productid` int NOT NULL,
    PRIMARY KEY (`discountid`,`productid`),
    KEY `productid` (`productid`),
-   CONSTRAINT `discount_products_ibfk_1` FOREIGN KEY (`discountid`) REFERENCES `discount` (`discountid`),
+   CONSTRAINT `discount_products_ibfk_1` FOREIGN KEY (`discountid`) REFERENCES `discount` (`discountid`) ON DELETE CASCADE,
    CONSTRAINT `discount_products_ibfk_2` FOREIGN KEY (`productid`) REFERENCES `products` (`productid`)
 );
 
