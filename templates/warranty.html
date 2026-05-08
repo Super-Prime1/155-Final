@@ -3,42 +3,7 @@
 {% block content %}
 <div class="warranty-page-bg">
 
-<div class="check_warranty">
-<form method="POST">
-    <h2>Check Warranty</h2>
-    <input type="hidden" name="action" value="check">
-    <label>Order ID</label>
-    <input type="number" name="order_id" required>
-    <button type="submit">Check</button>
-</form>
-</div>
 
-
-<div class="warranty_results">
-{% if result %}
-
-    <h3>Result</h3>
-
-    <p><strong>Product:</strong> {{ result.title }}</p>
-
-    {% if status == "active" %}
-        <p style="color:green;">
-             Warranty is ACTIVE until {{ result.expire_date }}
-        </p>
-
-    {% elif status == "expired" %}
-        <p style="color:red;">
-             Warranty EXPIRED on {{ result.expire_date }}
-        </p>
-
-    {% else %}
-        <p style="color:gray;">
-             No warranty found for this product
-        </p>
-    {% endif %}
-
-{% endif %}
-</div>
 
 
 {% if session.get('role') in ['admin', 'vendor'] %}
@@ -46,13 +11,62 @@
     <h2>warranty create</h2>
 <div class="warranty_create">
     <form method="POST">
-    <h2>warranty create</h2>
     <input type="hidden" name="action" value="create">
     <label >experation date</label>
     <input type="text" name="expire_box">
     <button type="submit">submit</button>
     </form>
 </div>
+
+
+<div class="all_warranties">
+
+    <div class="warranty_header">
+        <h2>All Warranties</h2>
+    </div>
+
+    {% if warranties %}
+
+        <div class="warranty_grid">
+
+            {% for w in warranties %}
+
+            <div class="warranty_card">
+
+                <div class="warranty_top">
+                    <span class="warranty_id">
+                        Warranty #{{ w.warrantyid }}
+                    </span>
+                </div>
+
+                <div class="warranty_info">
+
+                    <p>
+                        <strong>Expire Date:</strong>
+                        {{ w.expire_date }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="no_warranty">
+
+            <p>No warranties found.</p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
 {% endif %}
 
 </div>
